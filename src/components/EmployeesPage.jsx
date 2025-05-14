@@ -268,7 +268,7 @@ const EmployeesPage = () => {
 
     // Handle submit edit
     const handleSubmitEdit = async (e) => {
-        if (e) e.preventDefault();
+        e.preventDefault(); // Prevent form submission from reloading
         if (!validateForm()) return;
 
         try {
@@ -283,15 +283,25 @@ const EmployeesPage = () => {
                 }
             );
 
-            // Update employees list
-            setEmployees(prev =>
-                prev.map(emp =>
-                    emp._id === employeeDetails._id ? response.data : emp
+            // Update employees list without reloading
+            setEmployees(prevEmployees => 
+                prevEmployees.map(emp => 
+                    emp._id === employeeDetails._id ? { ...emp, ...response.data } : emp
                 )
             );
 
             toast.success('Employee updated successfully');
             setEditOpen(false);
+            setEditForm({
+                name: '',
+                email: '',
+                employeeId: '',
+                role: '',
+                team: '',
+                bloodGroup: '',
+                status: 'Active',
+                isAdmin: false
+            });
         } catch (err) {
             console.error('Error updating employee:', err);
             toast.error(err.response?.data?.message || 'Failed to update employee');
@@ -320,6 +330,8 @@ const EmployeesPage = () => {
     // Handle form change
     const handleFormChange = (e) => {
         const { name, value, checked } = e.target;
+        
+        // Update form state without triggering reload
         setEditForm(prev => ({
             ...prev,
             [name]: name === 'isAdmin' ? checked : value
@@ -379,7 +391,7 @@ const EmployeesPage = () => {
                     </IconButton>
                 </DialogTitle>
                 <DialogContent sx={{ py: 3 }}>
-                    <form onSubmit={handleSubmitEdit}>
+                    <form onSubmit={handleSubmitEdit} noValidate>
                         <Grid container spacing={3}>
                             <Grid item xs={12} md={6}>
                                 <TextField
@@ -544,6 +556,7 @@ const EmployeesPage = () => {
                     <Button
                         onClick={() => setEditOpen(false)}
                         variant="outlined"
+                        disabled={submitting}
                         startIcon={<Close />}
                     >
                         Cancel
@@ -554,9 +567,9 @@ const EmployeesPage = () => {
                         variant="contained"
                         startIcon={<Save />}
                         sx={{
-                            background: getGradient(0),
+                            background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
                             '&:hover': {
-                                background: getGradient(1)
+                                background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)'
                             }
                         }}
                     >

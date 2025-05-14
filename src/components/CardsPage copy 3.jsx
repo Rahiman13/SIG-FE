@@ -552,7 +552,6 @@ const CardsPage = () => {
       ...prev,
       [name]: value
     }));
-
     // Clear error when field is edited
     if (formErrors[name]) {
       setFormErrors(prev => ({
@@ -650,19 +649,21 @@ const CardsPage = () => {
     try {
       const formData = new FormData();
       formData.append('title', cardForm.title);
-      // Ensure description is properly stringified
       formData.append('description', JSON.stringify(cardForm.description));
       formData.append('type', cardForm.type);
 
+      // Only append image if it's a File object (new image)
       if (cardForm.image instanceof File) {
         formData.append('image', cardForm.image);
       }
+      // If editing and there's an existing imagePublicId, include it
       if (isEditMode && cardForm.imagePublicId) {
         formData.append('imagePublicId', cardForm.imagePublicId);
       }
 
       let response;
       if (isEditMode && selectedCardId) {
+        // Edit existing card
         response = await axios.put(`${BaseUrl}/cards/${selectedCardId}`, formData, {
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -673,11 +674,10 @@ const CardsPage = () => {
         // Update the cards state with the edited card
         setCards(prevCards =>
           prevCards.map(card =>
-            card._id === selectedCardId ? response.data.card : card
+            card._id === selectedCardId ? response.data : card
           )
         );
-        toast.success(response.data.message || 'Card updated successfully!');
-
+        toast.success('Card updated successfully!');
       } else {
         // Create new card
         response = await axios.post(`${BaseUrl}/cards`, formData, {
@@ -694,16 +694,6 @@ const CardsPage = () => {
       }
 
       handleCloseDialog();
-      // Reset form after successful submission
-      setCardForm({
-        title: '',
-        description: [{ type: 'paragraph', value: '' }],
-        type: 'Other',
-        image: null,
-        imagePublicId: ''
-      });
-      setSelectedCardId(null);
-      setIsEditMode(false);
     } catch (error) {
       console.error('Error saving card:', error);
       toast.error(error.response?.data?.message || 'Failed to save card');
@@ -760,33 +750,22 @@ const CardsPage = () => {
   };
 
   // Handle opening dialog for editing an existing card
-  const handleEditCard = async (cardId) => {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`${BaseUrl}/cards/${cardId}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      const card = response.data;
-      // Properly set all form fields including description
-      setCardForm({
-        title: card.title || '',
-        description: Array.isArray(card.description) ? card.description : [{ type: 'paragraph', value: card.description || '' }],
-        type: card.type || 'Other',
-        image: card.image || null,
-        imagePublicId: card.imagePublicId || ''
-      });
-      setSelectedCardId(cardId);
-      setIsEditMode(true);
-      setOpenDialog(true);
-    } catch (error) {
-      console.error('Error fetching card details:', error);
-      toast.error('Failed to load card details');
-    }
+  const handleEditCard = (cardToEdit) => {
+    setIsEditMode(true);
+    setSelectedCardId(cardToEdit._id);
+    setCardForm({
+      title: cardToEdit.title,
+      description: Array.isArray(cardToEdit.description)
+        ? cardToEdit.description
+        : [{ type: 'paragraph', value: cardToEdit.description || '' }],
+      type: cardToEdit.type,
+      image: cardToEdit.image,
+      imagePublicId: cardToEdit.imagePublicId
+    });
+    setPreviewImage(cardToEdit.image || '');
+    setFormErrors({});
+    setOpenDialog(true);
   };
-
 
   const handleCloseDialog = () => {
     setOpenDialog(false);
@@ -1139,7 +1118,7 @@ const CardsPage = () => {
                       size="small"
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleEditCard(card._id);
+                        handleEditCard(card);
                       }}
                       sx={{
                         bgcolor: 'rgba(255,255,255,0.95)',
