@@ -33,10 +33,9 @@ import {
 } from '@mui/icons-material';
 import axios from 'axios';
 import BaseUrl from '../Api';
-// import { toast } from 'react-toastify';
-import Swal from 'sweetalert2';
 import { ToastContainer, toast } from 'react-toastify';
-
+import 'react-toastify/dist/ReactToastify.css';
+import Swal from 'sweetalert2';
 
 // Styled Components
 const StyledCard = styled(Card)(({ theme }) => ({
@@ -255,7 +254,7 @@ const QuickLinksPage = () => {
         // flexDirection: 'column'
       }}
     >
-            <ToastContainer position="top-right" autoClose={3000} />
+      <ToastContainer position="top-right" autoClose={3000} />
 
       <Box
         sx={{
@@ -493,7 +492,11 @@ const QuickLinksPage = () => {
             pb: 1,
             display: 'flex',
             alignItems: 'center',
-            gap: 1
+            gap: 1,
+            borderBottom: '1px solid rgba(0,0,0,0.08)',
+            position: 'relative',
+            backgroundColor: 'rgba(255, 255, 255, 0.8)',
+            backdropFilter: 'blur(10px)',
           }}>
             {isEditMode ? <Edit color="primary" /> : <Add color="primary" />}
             <Typography variant="h5" component="span">

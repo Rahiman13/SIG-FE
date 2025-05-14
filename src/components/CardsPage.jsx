@@ -398,6 +398,20 @@ const ContentBlock = styled(Box)(({ theme, type }) => ({
   })
 }));
 
+const formatDescription = (description) => {
+  if (!description) return [{ type: 'paragraph', value: '' }];
+  
+  try {
+    if (typeof description === 'string') {
+      const parsed = JSON.parse(description);
+      return Array.isArray(parsed) ? parsed : [{ type: 'paragraph', value: description }];
+    }
+    return Array.isArray(description) ? description : [{ type: 'paragraph', value: description }];
+  } catch (e) {
+    return [{ type: 'paragraph', value: description }];
+  }
+};
+
 const CardsPage = () => {
   const [cards, setCards] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -460,13 +474,11 @@ const CardsPage = () => {
     }
   };
 
-  const fetchCards = async () => {
+  const fetchCards = useCallback(async () => {
     try {
       setLoading(true);
-      // Check if token exists
       if (!token) {
         setError('Authentication token is missing. Please log in again.');
-        setLoading(false);
         return;
       }
 
@@ -476,29 +488,26 @@ const CardsPage = () => {
         }
       });
       setCards(response.data);
-      setLoading(false);
     } catch (err) {
       console.error('Error fetching cards:', err);
       setError('Failed to load cards data. Please try again later.');
+    } finally {
       setLoading(false);
     }
-  };
+  }, [token]);
 
   // Fetch cards data
   useEffect(() => {
-
-
     fetchCards();
     fetchCardCounts();
 
-    // Add scroll listener for scroll-to-top button
     const handleScroll = () => {
       setShowScrollTop(window.scrollY > 300);
     };
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [token]);
+  }, [fetchCards]);
 
   // Fetch card counts by category
   const fetchCardCounts = async () => {
@@ -561,9 +570,6 @@ const CardsPage = () => {
       }));
     }
   }, [formErrors]);
-
-
-
 
   // Handle description change
   const handleDescriptionChange = (value) => {
@@ -632,8 +638,6 @@ const CardsPage = () => {
     }));
   }, []);
 
-
-
   const handleDeleteContentBlock = (index) => {
     setCardForm(prev => ({
       ...prev,
@@ -650,60 +654,122 @@ const CardsPage = () => {
     try {
       const formData = new FormData();
       formData.append('title', cardForm.title);
-      // Ensure description is properly stringified
       formData.append('description', JSON.stringify(cardForm.description));
       formData.append('type', cardForm.type);
 
+      // Only append image if it's a new File object
       if (cardForm.image instanceof File) {
         formData.append('image', cardForm.image);
       }
+
+      // For edit mode, include the existing image public ID
       if (isEditMode && cardForm.imagePublicId) {
         formData.append('imagePublicId', cardForm.imagePublicId);
       }
 
       let response;
       if (isEditMode && selectedCardId) {
-        response = await axios.put(`${BaseUrl}/cards/${selectedCardId}`, formData, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data'
-          }
-        });
+        // Create a complete data object
+        const updateData = {
+          title: cardForm.title,
+          description: cardForm.description,
+          type: cardForm.type,
+          imagePublicId: cardForm.imagePublicId
+        };
 
-        // Update the cards state with the edited card
-        setCards(prevCards =>
-          prevCards.map(card =>
-            card._id === selectedCardId ? response.data.card : card
-          )
-        );
-        toast.success(response.data.message || 'Card updated successfully!');
+        // Create FormData from the complete object
+        const formData = new FormData();
+        formData.append('title', updateData.title);
+        formData.append('description', JSON.stringify(updateData.description));
+        formData.append('type', updateData.type);
+        if (cardForm.image instanceof File) {
+          formData.append('image', cardForm.image);
+        }
+        if (updateData.imagePublicId) {
+          formData.append('imagePublicId', updateData.imagePublicId);
+        }
 
+        // Log the complete update data
+        console.log('Complete update data:', updateData);
+        console.log('FormData entries:', Object.fromEntries(formData.entries()));
+
+        // Try sending as JSON if multipart/form-data isn't working correctly
+        try {
+          response = await axios.put(
+            `${BaseUrl}/cards/${selectedCardId}`,
+            updateData, // Send the direct object instead of FormData
+            {
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+              }
+            }
+          );
+        } catch (error) {
+          console.log('JSON update failed, trying FormData...');
+          // If JSON fails, try with FormData as fallback
+          response = await axios.put(
+            `${BaseUrl}/cards/${selectedCardId}`,
+            formData,
+            {
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'multipart/form-data'
+              }
+            }
+          );
+        }
+
+        console.log('Edit Response:', response.data);
+        console.log('Response card data:', response.data.card);
+
+        if (response.data) {
+          const updatedCard = response.data.card || response.data;
+          
+          // Use our complete update data for the UI update
+          const mergedCard = {
+            ...updatedCard,
+            ...updateData // Ensure our update data takes precedence
+          };
+          
+          console.log('Final merged card data:', mergedCard);
+          
+          setCards(prevCards =>
+            prevCards.map(card =>
+              card._id === selectedCardId ? mergedCard : card
+            )
+          );
+
+          handleCloseDialog();
+          toast.success('Card updated successfully!');
+        } else {
+          throw new Error('No data received from server');
+        }
       } else {
-        // Create new card
-        response = await axios.post(`${BaseUrl}/cards`, formData, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data'
+        // Handle new card creation
+        response = await axios.post(
+          `${BaseUrl}/cards`,
+          formData,
+          {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'multipart/form-data'
+            }
           }
-        });
+        );
 
-        setCards(prev => [...prev, response.data]);
-        fetchCards();
-        fetchCardCounts();
-        toast.success('Card created successfully!');
+        if (response.data) {
+          const newCard = response.data.card || response.data;
+          setCards(prev => [...prev, newCard]);
+          handleCloseDialog();
+          toast.success('Card created successfully!');
+        }
       }
+      
+      // Refresh the cards list and counts
+      await fetchCards();
+      await fetchCardCounts();
 
-      handleCloseDialog();
-      // Reset form after successful submission
-      setCardForm({
-        title: '',
-        description: [{ type: 'paragraph', value: '' }],
-        type: 'Other',
-        image: null,
-        imagePublicId: ''
-      });
-      setSelectedCardId(null);
-      setIsEditMode(false);
     } catch (error) {
       console.error('Error saving card:', error);
       toast.error(error.response?.data?.message || 'Failed to save card');
@@ -762,7 +828,7 @@ const CardsPage = () => {
   // Handle opening dialog for editing an existing card
   const handleEditCard = async (cardId) => {
     try {
-      const token = localStorage.getItem('token');
+      setLoading(true);
       const response = await axios.get(`${BaseUrl}/cards/${cardId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -770,23 +836,39 @@ const CardsPage = () => {
       });
 
       const card = response.data;
-      // Properly set all form fields including description
+      
+      // Ensure description is properly formatted
+      let description;
+      try {
+        // Try to parse if it's a string
+        description = typeof card.description === 'string' 
+          ? JSON.parse(card.description)
+          : Array.isArray(card.description)
+            ? card.description
+            : [{ type: 'paragraph', value: card.description || '' }];
+      } catch (e) {
+        // If parsing fails, create a default paragraph block
+        description = [{ type: 'paragraph', value: card.description || '' }];
+      }
+
       setCardForm({
         title: card.title || '',
-        description: Array.isArray(card.description) ? card.description : [{ type: 'paragraph', value: card.description || '' }],
+        description: description,
         type: card.type || 'Other',
         image: card.image || null,
         imagePublicId: card.imagePublicId || ''
       });
+      setPreviewImage(card.image || '');
       setSelectedCardId(cardId);
       setIsEditMode(true);
       setOpenDialog(true);
     } catch (error) {
       console.error('Error fetching card details:', error);
       toast.error('Failed to load card details');
+    } finally {
+      setLoading(false);
     }
   };
-
 
   const handleCloseDialog = () => {
     setOpenDialog(false);
@@ -1180,12 +1262,10 @@ const CardsPage = () => {
                     {card.title}
                   </Typography>
                   <Typography className="card-description">
-                    {Array.isArray(card.description)
-                      ? card.description
-                        .filter(block => block.type === 'paragraph')
-                        .map(block => block.value)
-                        .join(' ')
-                      : card.description}
+                    {formatDescription(card.description)
+                      .filter(block => block.type === 'paragraph')
+                      .map(block => block.value)
+                      .join(' ')}
                   </Typography>
                   <div className="card-footer">
                     <Chip

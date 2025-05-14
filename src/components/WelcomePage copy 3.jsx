@@ -23,36 +23,21 @@ import {
     TrendingUp,
     Lightbulb,
     Favorite,
-    AccessTime,
-
+    AccessTime
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import Navbar from './Navbar';
 import Footer from './Footer';
-import axios from 'axios';
-import BaseUrl from '../Api';
-import { useNavigate } from 'react-router-dom';
 
 const WelcomePage = () => {
-    const navigate = useNavigate();
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
     const [userData, setUserData] = useState(null);
     const [currentTime, setCurrentTime] = useState(new Date());
     const [greeting, setGreeting] = useState('');
-    const [employeeStats, setEmployeeStats] = useState({
-        total: 0,
-        roleWise: {}
-    });
-    const [ticketStats, setTicketStats] = useState({
-        Open: 0,
-        Resolved: 0,
-        Breached: 0
-    });
 
     useEffect(() => {
-
         // Get user data from localStorage
         const storedUserData = localStorage.getItem('userData');
         if (storedUserData) {
@@ -122,36 +107,13 @@ const WelcomePage = () => {
         }
     };
 
-    useEffect(() => {
-        const fetchStats = async () => {
-            try {
-                const token = localStorage.getItem('token');
-                const [employeeResponse, ticketResponse] = await Promise.all([
-                    axios.get(`${BaseUrl}/employees/count`, {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    }),
-                    axios.get(`${BaseUrl}/tickets/ticket-stats/by-status`, {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    })
-                ]);
-
-                setEmployeeStats(employeeResponse.data);
-                setTicketStats(ticketResponse.data.data);
-            } catch (error) {
-                console.error('Error fetching stats:', error);
-            }
-        };
-
-        fetchStats();
-    }, []);
-
     // Quick links data
     const quickLinks = [
-        { icon: <People />, title: 'Employees', color: '#8b5cf6', path: '/employees' },
-        { icon: <CreditCard />, title: 'Cards', color: '#ec4899', path: '/cards' },
-        { icon: <LinkIcon />, title: 'Quick Links', color: '#10b981', path: '/quick-links' },
-        { icon: <ConfirmationNumber />, title: 'Tickets', color: '#f59e0b', path: '/tickets' },
-        // { icon: <Notifications />, title: 'Notifications', color: '#ef4444', path: '/notifications' }
+        { icon: <People />, title: 'Employees', color: '#8b5cf6' },
+        { icon: <CreditCard />, title: 'Cards', color: '#ec4899' },
+        { icon: <LinkIcon />, title: 'Quick Links', color: '#10b981' },
+        { icon: <ConfirmationNumber />, title: 'Tickets', color: '#f59e0b' },
+        { icon: <Notifications />, title: 'Notifications', color: '#ef4444' }
     ];
 
     // Recent activities (mock data)
@@ -163,71 +125,12 @@ const WelcomePage = () => {
     ];
 
     // Stats cards data
-    // const statsCards = [
-    //     { 
-    //         title: 'Total Employees', 
-    //         value: employeeStats.total.toString(), 
-    //         icon: <People />, 
-    //         color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' 
-    //     },
-    //     { 
-    //         title: 'DevOps Team', 
-    //         value: employeeStats.roleWise?.DevOps || '0', 
-    //         icon: <Settings />, 
-    //         color: 'linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%)' 
-    //     },
-    //     { 
-    //         title: 'Development Team', 
-    //         value: employeeStats.roleWise?.Developer || '0', 
-    //         icon: <Code />, 
-    //         color: 'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)' 
-    //     },
-    //     { 
-    //         title: 'HR Team', 
-    //         value: employeeStats.roleWise?.HR || '0', 
-    //         icon: <Group />, 
-    //         color: 'linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%)' 
-    //     }
-    // ];
-
-    // Add new animation variants
-    const floatUpVariants = {
-        initial: { y: 20, opacity: 0 },
-        animate: {
-            y: 0,
-            opacity: 1,
-            transition: {
-                duration: 0.6,
-                ease: "easeOut"
-            }
-        }
-    };
-
     const statsCards = [
-        {
-            title: 'Employee Overview',
-            value: employeeStats.total.toString(),
-            subStats: [
-                { label: 'DevOps', value: employeeStats.roleWise?.DevOps || 0 },
-                { label: 'Developer', value: employeeStats.roleWise?.Developer || 0 },
-                { label: 'HR', value: employeeStats.roleWise?.HR || 0 }
-            ],
-            icon: <People />,
-            color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-        },
-        {
-            title: 'Ticket Status',
-            value: Object.values(ticketStats).reduce((a, b) => a + b, 0).toString(),
-            subStats: [
-                { label: 'Open', value: ticketStats.Open },
-                { label: 'Resolved', value: ticketStats.Resolved },
-                { label: 'Breached', value: ticketStats.Breached }
-            ],
-            icon: <ConfirmationNumber />,
-            color: 'linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%)'
-        }
+        { title: 'Active Employees', value: '124', icon: <People />, color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' },
+        { title: 'Open Tickets', value: '8', icon: <ConfirmationNumber />, color: 'linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%)' },
+        { title: 'Company Updates', value: '3', icon: <TrendingUp />, color: 'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)' },
+        { title: 'Resources', value: '42', icon: <Lightbulb />, color: 'linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%)' }
     ];
-
 
     // Add new animation variants
     const glowVariants = {
@@ -254,29 +157,11 @@ const WelcomePage = () => {
         }
     };
 
-    useEffect(() => {
-        const fetchEmployeeCount = async () => {
-            try {
-                const token = localStorage.getItem('token');
-                const response = await axios.get(`${BaseUrl}/employees/count`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                setEmployeeStats(response.data);
-            } catch (error) {
-                console.error('Error fetching employee count:', error);
-            }
-        };
-
-        fetchEmployeeCount();
-    }, []);
-
     return (
-        <Box sx={{
-            minHeight: '100vh',
-            display: 'flex',
-            flexDirection: 'column',
+        <Box sx={{ 
+            minHeight: '100vh', 
+            display: 'flex', 
+            flexDirection: 'column', 
             bgcolor: '#f8fafc',
             position: 'relative',
             overflow: 'hidden'
@@ -290,11 +175,10 @@ const WelcomePage = () => {
                     position: 'fixed',
                     top: '-50%',
                     right: '-50%',
-                    width: '150%',
-                    height: '150%',
-                    background: 'radial-gradient(circle, rgba(99, 102, 241, 0.05) 0%, transparent 70%)',
-                    zIndex: 0,
-                    filter: 'blur(40px)'
+                    width: '100%',
+                    height: '100%',
+                    background: 'radial-gradient(circle, rgba(99, 102, 241, 0.03) 0%, transparent 70%)',
+                    zIndex: 0
                 }}
             />
             <motion.div
@@ -305,11 +189,11 @@ const WelcomePage = () => {
                     position: 'fixed',
                     bottom: '-50%',
                     left: '-50%',
-                    width: '150%',
-                    height: '150%',
-                    background: 'radial-gradient(circle, rgba(14, 165, 233, 0.05) 0%, transparent 70%)',
+                    width: '100%',
+                    height: '100%',
+                    background: 'radial-gradient(circle, rgba(14, 165, 233, 0.03) 0%, transparent 70%)',
                     zIndex: 0,
-                    filter: 'blur(40px)'
+                    animationDelay: '2s'
                 }}
             />
 
@@ -326,11 +210,10 @@ const WelcomePage = () => {
                         borderRadius: 4,
                         background: 'linear-gradient(135deg, rgba(79, 70, 229, 0.95) 0%, rgba(59, 130, 246, 0.95) 100%)',
                         backdropFilter: 'blur(10px)',
-                        boxShadow: '0 20px 40px -15px rgba(59, 130, 246, 0.3)',
+                        boxShadow: '0 10px 25px -5px rgba(59, 130, 246, 0.5)',
                         color: 'white',
                         position: 'relative',
-                        overflow: 'hidden',
-                        border: '1px solid rgba(255,255,255,0.1)'
+                        overflow: 'hidden'
                     }}>
                         {/* Enhanced Decorative Elements */}
                         <motion.div
@@ -356,9 +239,9 @@ const WelcomePage = () => {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.2, duration: 0.5 }}
                             >
-                                <Typography
-                                    variant="h4"
-                                    fontWeight="bold"
+                                <Typography 
+                                    variant="h4" 
+                                    fontWeight="bold" 
                                     gutterBottom
                                     sx={{
                                         fontSize: { xs: '1.75rem', md: '2.5rem' },
@@ -368,12 +251,12 @@ const WelcomePage = () => {
                                         gap: 1
                                     }}
                                 >
-                                    {greeting},
+                                    {greeting}, 
                                     <motion.span
                                         initial={{ opacity: 0, x: -20 }}
                                         animate={{ opacity: 1, x: 0 }}
                                         transition={{ delay: 0.4 }}
-                                        style={{
+                                        style={{ 
                                             background: 'linear-gradient(to right, #fff, #e0e7ff)',
                                             WebkitBackgroundClip: 'text',
                                             WebkitTextFillColor: 'transparent'
@@ -389,19 +272,19 @@ const WelcomePage = () => {
                                 animate={{ opacity: 1 }}
                                 transition={{ delay: 0.6 }}
                             >
-                                <Typography
-                                    variant="body1"
-                                    sx={{
-                                        opacity: 0.9,
+                                <Typography 
+                                    variant="body1" 
+                                    sx={{ 
+                                        opacity: 0.9, 
                                         mb: 2,
                                         fontSize: { xs: '0.875rem', md: '1rem' }
                                     }}
                                 >
-                                    {currentTime.toLocaleDateString('en-US', {
-                                        weekday: 'long',
-                                        year: 'numeric',
-                                        month: 'long',
-                                        day: 'numeric'
+                                    {currentTime.toLocaleDateString('en-US', { 
+                                        weekday: 'long', 
+                                        year: 'numeric', 
+                                        month: 'long', 
+                                        day: 'numeric' 
                                     })}
                                 </Typography>
                             </motion.div>
@@ -411,15 +294,15 @@ const WelcomePage = () => {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.8 }}
                             >
-                                <Typography
-                                    variant="h6"
-                                    sx={{
+                                <Typography 
+                                    variant="h6" 
+                                    sx={{ 
                                         maxWidth: '800px',
                                         fontSize: { xs: '1rem', md: '1.25rem' },
                                         lineHeight: 1.6
                                     }}
                                 >
-                                    Welcome to your Signavox portal. Access all your company resources,
+                                    Welcome to your Signavox portal. Access all your company resources, 
                                     information, and tools in one place.
                                 </Typography>
                             </motion.div>
@@ -434,11 +317,11 @@ const WelcomePage = () => {
                     transition={{ duration: 0.5, delay: 0.3 }}
                 >
 
-                    <Typography
-                        variant="h4"
-                        fontWeight="bold"
-                        sx={{
-                            mb: 6,
+                    <Typography 
+                        variant="h4" 
+                        fontWeight="bold" 
+                        sx={{ 
+                            mb: 6, 
                             color: '#1e293b',
                             fontSize: { xs: '1.75rem', md: '2.25rem' },
                             position: 'relative',
@@ -467,7 +350,7 @@ const WelcomePage = () => {
                     animate="visible"
                     transition={{ staggerChildren: 0.1, delayChildren: 0.4 }}
                 >
-                    <Box sx={{
+                    <Box sx={{ 
                         overflowX: 'auto',
                         mb: 8,
                         pb: 2,
@@ -482,9 +365,9 @@ const WelcomePage = () => {
                             borderRadius: 4
                         }
                     }}>
-                        <Grid
-                            container
-                            sx={{
+                        <Grid 
+                            container 
+                            sx={{ 
                                 flexWrap: 'nowrap',
                                 width: 'max-content',
                                 gap: 3
@@ -501,7 +384,6 @@ const WelcomePage = () => {
                                     >
                                         <Paper
                                             elevation={0}
-                                            onClick={() => navigate(link.path)}
                                             sx={{
                                                 p: { xs: 3, md: 4 },
                                                 borderRadius: 4,
@@ -538,7 +420,7 @@ const WelcomePage = () => {
                                             }}
                                         >
                                             <motion.div
-                                                whileHover={{
+                                                whileHover={{ 
                                                     rotate: [0, -10, 10, 0],
                                                     scale: 1.1
                                                 }}
@@ -560,8 +442,8 @@ const WelcomePage = () => {
                                                     {link.icon}
                                                 </Avatar>
                                             </motion.div>
-                                            <Typography
-                                                variant="h6"
+                                            <Typography 
+                                                variant="h6" 
                                                 fontWeight="bold"
                                                 sx={{
                                                     fontSize: { xs: '1rem', md: '1.125rem' },
@@ -584,11 +466,11 @@ const WelcomePage = () => {
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.5, delay: 0.3 }}
                 >
-                    <Typography
-                        variant="h4"
-                        fontWeight="bold"
-                        sx={{
-                            mb: 6,
+                    <Typography 
+                        variant="h4" 
+                        fontWeight="bold" 
+                        sx={{ 
+                            mb: 6, 
                             color: '#1e293b',
                             fontSize: { xs: '1.75rem', md: '2.25rem' },
                             position: 'relative',
@@ -612,7 +494,7 @@ const WelcomePage = () => {
 
                 {/* Stats Cards Section */}
                 <Box sx={{ mb: 8 }}>
-                    <Box sx={{
+                    <Box sx={{ 
                         overflowX: 'auto',
                         pb: 2,
                         '&::-webkit-scrollbar': {
@@ -626,9 +508,9 @@ const WelcomePage = () => {
                             borderRadius: 4
                         }
                     }}>
-                        {/* <Grid
-                            container
-                            sx={{
+                        <Grid 
+                            container 
+                            sx={{ 
                                 flexWrap: 'nowrap',
                                 width: 'max-content',
                                 gap: 3
@@ -686,52 +568,6 @@ const WelcomePage = () => {
                                             </CardContent>
                                         </Card>
                                     </motion.div>
-                                </Grid>
-                            ))}
-                        </Grid> */}
-                        <Grid container spacing={4}>
-                            {statsCards.map((card, index) => (
-                                <Grid item xs={12} md={6} key={index}>
-                                    <Paper
-                                        elevation={0}
-                                        sx={{
-                                            p: 3,
-                                            borderRadius: 4,
-                                            background: card.color,
-                                            color: 'white',
-                                            position: 'relative',
-                                            overflow: 'hidden'
-                                        }}
-                                    >
-                                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                                            <Avatar
-                                                sx={{
-                                                    bgcolor: 'rgba(255,255,255,0.2)',
-                                                    mr: 2
-                                                }}
-                                            >
-                                                {card.icon}
-                                            </Avatar>
-                                            <Typography variant="h6">{card.title}</Typography>
-                                        </Box>
-                                        <Typography variant="h3" sx={{ mb: 2 }}>
-                                            {card.value}
-                                        </Typography>
-                                        <Grid container spacing={2}>
-                                            {card.subStats.map((stat, i) => (
-                                                <Grid item xs={4} key={i}>
-                                                    <Box sx={{ textAlign: 'center' }}>
-                                                        <Typography variant="h5">
-                                                            {stat.value}
-                                                        </Typography>
-                                                        <Typography variant="body2" sx={{ opacity: 0.8 }}>
-                                                            {stat.label}
-                                                        </Typography>
-                                                    </Box>
-                                                </Grid>
-                                            ))}
-                                        </Grid>
-                                    </Paper>
                                 </Grid>
                             ))}
                         </Grid>
