@@ -16,12 +16,7 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-  Divider,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
+  Divider
 } from '@mui/material';
 import {
   Menu as MenuIcon,
@@ -33,67 +28,26 @@ import {
   ExitToApp,
   ChevronRight,
   Dashboard,
-  Add as AddIcon,
-  Close as CloseIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Logo from '../assets/signavox-logo.png';
-import axios from 'axios';
-import BaseUrl from '../Api';
-import { toast } from 'react-toastify';
 
 const Navbar = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [openTicketModal, setOpenTicketModal] = useState(false);
-  const [ticketData, setTicketData] = useState({
-    title: '',
-    description: '',
-  });
-  const [submitting, setSubmitting] = useState(false);
-
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const navigate = useNavigate();
   const userData = JSON.parse(localStorage.getItem('userData') || '{}');
-  const isAdmin = localStorage.getItem('isAdmin') === 'true';
-  const token = localStorage.getItem('token');
 
   const navItems = [
-    { title: 'Dashboard', path: '/welcome', icon: <Dashboard />, showAlways: true },
-    { title: 'Employees', path: '/employees', icon: <People />, adminOnly: true },
-    { title: 'Cards', path: '/cards', icon: <CreditCard />, showAlways: true },
-    { title: 'Quick Links', path: '/quick-links', icon: <LinkIcon />, showAlways: true },
-    { title: 'Tickets', path: '/tickets', icon: <ConfirmationNumber />, adminOnly: true },
+    { title: 'Dashboard', path: '/welcome', icon: <Dashboard /> },
+    { title: 'Employees', path: '/employees', icon: <People /> },
+    { title: 'Cards', path: '/cards', icon: <CreditCard /> },
+    { title: 'Quick Links', path: '/quick-links', icon: <LinkIcon /> },
+    { title: 'Tickets', path: '/tickets', icon: <ConfirmationNumber /> },
   ];
-
-  const handleCreateTicket = async () => {
-    try {
-      setSubmitting(true);
-      const response = await axios.post(
-        `${BaseUrl}/tickets`,
-        ticketData,
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        }
-      );
-
-      if (response.status === 201 || response.status === 200) {
-        toast.success('Ticket created successfully!');
-        setOpenTicketModal(false);
-        setTicketData({ title: '', description: '' });
-      }
-    } catch (error) {
-      console.error('Error creating ticket:', error);
-      toast.error(error.response?.data?.message || 'Failed to create ticket');
-    } finally {
-      setSubmitting(false);
-    }
-  };
 
   const handleLogout = () => {
     localStorage.clear();
@@ -111,10 +65,6 @@ const Navbar = () => {
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
-
-  const filteredNavItems = navItems.filter(item => 
-    item.showAlways || (isAdmin && item.adminOnly)
-  );
 
   return (
     <>
@@ -158,8 +108,8 @@ const Navbar = () => {
           </Box>
 
           {!isMobile && (
-            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-              {filteredNavItems.map((item) => (
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              {navItems.map((item) => (
                 <motion.div
                   key={item.path}
                   whileHover={{ scale: 1.05 }}
@@ -179,25 +129,6 @@ const Navbar = () => {
                   </Button>
                 </motion.div>
               ))}
-              {!isAdmin && (
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Button
-                    color="primary"
-                    startIcon={<ConfirmationNumber />}
-                    onClick={() => setOpenTicketModal(true)}
-                    sx={{ 
-                      textTransform: 'none',
-                      fontWeight: 600,
-                      fontSize: '1rem'
-                    }}
-                  >
-                    Raise Ticket
-                  </Button>
-                </motion.div>
-              )}
             </Box>
           )}
 
@@ -275,7 +206,7 @@ const Navbar = () => {
         </Box>
         <Divider />
         <List>
-          {filteredNavItems.map((item) => (
+          {navItems.map((item) => (
             <ListItem 
               button 
               key={item.path}
@@ -288,94 +219,8 @@ const Navbar = () => {
               <ListItemText primary={item.title} />
             </ListItem>
           ))}
-          {!isAdmin && (
-            <ListItem 
-              button 
-              onClick={() => {
-                setOpenTicketModal(true);
-                handleDrawerToggle();
-              }}
-            >
-              <ListItemIcon><ConfirmationNumber /></ListItemIcon>
-              <ListItemText primary="Raise Ticket" />
-            </ListItem>
-          )}
         </List>
       </Drawer>
-
-      {/* Ticket Creation Modal */}
-      <Dialog
-        open={openTicketModal}
-        onClose={() => setOpenTicketModal(false)}
-        maxWidth="sm"
-        fullWidth
-        PaperProps={{
-          sx: {
-            borderRadius: '16px',
-            background: 'rgba(255, 255, 255, 0.9)',
-            backdropFilter: 'blur(10px)',
-          }
-        }}
-      >
-        <DialogTitle sx={{ 
-          pb: 2,
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center'
-        }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <ConfirmationNumber color="primary" />
-            <Typography variant="h6">Raise New Ticket</Typography>
-          </Box>
-          <IconButton 
-            onClick={() => setOpenTicketModal(false)}
-            size="small"
-          >
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
-        <DialogContent dividers>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
-            <TextField
-              fullWidth
-              label="Title"
-              value={ticketData.title}
-              onChange={(e) => setTicketData({ ...ticketData, title: e.target.value })}
-              required
-            />
-            <TextField
-              fullWidth
-              label="Description"
-              value={ticketData.description}
-              onChange={(e) => setTicketData({ ...ticketData, description: e.target.value })}
-              required
-              multiline
-              rows={4}
-            />
-          </Box>
-        </DialogContent>
-        <DialogActions sx={{ p: 2.5 }}>
-          <Button 
-            onClick={() => setOpenTicketModal(false)}
-            variant="outlined"
-            startIcon={<CloseIcon />}
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={handleCreateTicket}
-            variant="contained"
-            disabled={submitting || !ticketData.title || !ticketData.description}
-            startIcon={<AddIcon />}
-            sx={{
-              background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
-              color: 'white',
-            }}
-          >
-            {submitting ? 'Submitting...' : 'Submit Ticket'}
-          </Button>
-        </DialogActions>
-      </Dialog>
     </>
   );
 };
