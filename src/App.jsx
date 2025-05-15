@@ -9,6 +9,7 @@ import CardDetailsPage from './components/CardDetails';
 import QuickLinksPage from './components/QuickLinksPage';
 import TicketsPage from './components/TicketsPage';
 import ForgotPasswordPage from './components/ForgotPasswordPage';
+import ProfilePage from './components/ProfilePage';
 import ProtectedRoute from './components/ProtectedRoute';
 import { ThemeProvider } from '@mui/material/styles';
 import { createTheme } from '@mui/material';
@@ -25,6 +26,8 @@ const theme = createTheme({
 });
 
 function App() {
+  const isAdmin = localStorage.getItem('isAdmin') === 'true';
+
   return (
     <ThemeProvider theme={theme}>
       <Router>
@@ -44,13 +47,23 @@ function App() {
           {/* Protected Routes with Layout */}
           <Route element={<Layout />}>
             <Route path="/welcome" element={<WelcomePage />} />
+            {/* <Route 
+              path="/employees" 
+              element={
+                isAdmin ? (
+                  <EmployeesPage />
+                ) : (
+                  <Navigate to="/welcome" replace />
+                )
+              } 
+            /> */}
+
             <Route path="/employees" element={<EmployeesPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
             <Route path="/cards" element={<CardsPage />} />
             <Route path="/cards/:id" element={<CardDetailsPage />} />
             <Route path="/quick-links" element={<QuickLinksPage />} />
             <Route path="/tickets" element={<TicketsPage />} />
-
-            {/* <Route path="/employees" element={<EmployeesPage />} /> */}
           </Route>
 
           {/* Redirect root to login or welcome based on auth status */}

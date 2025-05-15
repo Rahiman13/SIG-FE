@@ -144,7 +144,7 @@ const WelcomePage = () => {
 
         fetchStats();
     }, []);
-
+    
     // Add isAdmin check
     const isAdmin = localStorage.getItem('isAdmin') === 'true';
 
@@ -165,6 +165,98 @@ const WelcomePage = () => {
         { title: 'New announcement posted', time: '2 days ago', icon: <Notifications />, color: '#ef4444' }
     ];
 
+    // Stats cards data
+    // const statsCards = [
+    //     { 
+    //         title: 'Total Employees', 
+    //         value: employeeStats.total.toString(), 
+    //         icon: <People />, 
+    //         color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' 
+    //     },
+    //     { 
+    //         title: 'DevOps Team', 
+    //         value: employeeStats.roleWise?.DevOps || '0', 
+    //         icon: <Settings />, 
+    //         color: 'linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%)' 
+    //     },
+    //     { 
+    //         title: 'Development Team', 
+    //         value: employeeStats.roleWise?.Developer || '0', 
+    //         icon: <Code />, 
+    //         color: 'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)' 
+    //     },
+    //     { 
+    //         title: 'HR Team', 
+    //         value: employeeStats.roleWise?.HR || '0', 
+    //         icon: <Group />, 
+    //         color: 'linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%)' 
+    //     }
+    // ];
+
+    // Add new animation variants
+    const floatUpVariants = {
+        initial: { y: 20, opacity: 0 },
+        animate: {
+            y: 0,
+            opacity: 1,
+            transition: {
+                duration: 0.6,
+                ease: "easeOut"
+            }
+        }
+    };
+
+    const bounceVariants = {
+        initial: { scale: 0.9 },
+        animate: {
+            scale: [0.9, 1.1, 1],
+            transition: {
+                duration: 1.5,
+                repeat: Infinity,
+                repeatType: "reverse"
+            }
+        }
+    };
+
+    const statsCards = [
+        {
+            title: 'Employee Overview',
+            value: employeeStats.total.toString(),
+            subStats: [
+                { label: 'DevOps', value: employeeStats.roleWise?.DevOps || 0 },
+                { label: 'Developer', value: employeeStats.roleWise?.Developer || 0 },
+                { label: 'HR', value: employeeStats.roleWise?.HR || 0 }
+            ],
+            icon: <People />,
+            color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+        },
+        {
+            title: 'Ticket Status',
+            value: Object.values(ticketStats).reduce((a, b) => a + b, 0).toString(),
+            subStats: [
+                { label: 'Open', value: ticketStats.Open },
+                { label: 'Resolved', value: ticketStats.Resolved },
+                { label: 'Breached', value: ticketStats.Breached }
+            ],
+            icon: <ConfirmationNumber />,
+            color: 'linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%)'
+        }
+    ];
+
+
+    // Add new animation variants
+    const glowVariants = {
+        initial: { opacity: 0.5 },
+        animate: {
+            opacity: [0.5, 1, 0.5],
+            transition: {
+                duration: 4,
+                repeat: Infinity,
+                repeatType: "reverse"
+            }
+        }
+    };
+
     const rotateVariants = {
         initial: { rotate: 0 },
         animate: {
@@ -177,66 +269,23 @@ const WelcomePage = () => {
         }
     };
 
-    const glowVariants = {
-        initial: { opacity: 0 },
-        animate: {
-            opacity: 0.5,
-            transition: {
-                duration: 20,
-                repeat: Infinity,
-                ease: "linear"
+    useEffect(() => {
+        const fetchEmployeeCount = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await axios.get(`${BaseUrl}/employees/count`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                setEmployeeStats(response.data);
+            } catch (error) {
+                console.error('Error fetching employee count:', error);
             }
-        }
-    };
+        };
 
-    const statsCardVariants = {
-        initial: { y: 20, opacity: 0 },
-        animate: {
-            y: 0,
-            opacity: 1,
-            transition: { type: "spring", stiffness: 100 }
-        }
-    }
-
-    const bounceVariants = {
-        initial: { y: 0 },
-        animate: {
-            y: [-10, 0, -10],
-            transition: {
-                duration: 2,
-                repeat: Infinity,
-                repeatType: "reverse"
-            }
-        }
-    }
-
-    // Stats cards data
-    const statsCards = [
-        {
-            title: 'Employee Overview',
-            value: employeeStats.total.toString(),
-            subStats: [
-                { label: 'DevOps', value: employeeStats.roleWise?.DevOps || 0 },
-                { label: 'Developer', value: employeeStats.roleWise?.Developer || 0 },
-                { label: 'HR', value: employeeStats.roleWise?.HR || 0 }
-            ],
-            icon: <People />,
-            color: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
-            bgPattern: 'radial-gradient(circle at 90% 90%, rgba(255,255,255,0.1) 0%, transparent 50%)'
-        },
-        {
-            title: 'Ticket Status',
-            value: Object.values(ticketStats).reduce((a, b) => a + b, 0).toString(),
-            subStats: [
-                { label: 'Open', value: ticketStats.Open || 0 },
-                { label: 'Resolved', value: ticketStats.Resolved || 0 },
-                { label: 'Breached', value: ticketStats.Breached || 0 }
-            ],
-            icon: <ConfirmationNumber />,
-            color: 'linear-gradient(135deg, #ec4899 0%, #db2777 100%)',
-            bgPattern: 'radial-gradient(circle at 10% 10%, rgba(255,255,255,0.1) 0%, transparent 50%)'
-        }
-    ];
+        fetchEmployeeCount();
+    }, []);
 
     return (
         <Box sx={{
@@ -312,40 +361,6 @@ const WelcomePage = () => {
                                 background: 'radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%)',
                                 borderRadius: '50%',
                                 filter: 'blur(20px)',
-                                zIndex: 0
-                            }}
-                        />
-
-                        {/* Animated decorative elements */}
-                        <motion.div
-                            animate={{
-                                y: [0, -10, 0],
-                                transition: { duration: 3, repeat: Infinity, repeatType: "reverse" }
-                            }}
-                            style={{
-                                position: 'absolute',
-                                top: -100,
-                                right: -100,
-                                width: 300,
-                                height: 300,
-                                borderRadius: '50%',
-                                background: 'rgba(255,255,255,0.1)',
-                                zIndex: 0
-                            }}
-                        />
-                        <motion.div
-                            animate={{
-                                y: [0, -10, 0],
-                                transition: { duration: 3, repeat: Infinity, repeatType: "reverse", delay: 1 }
-                            }}
-                            style={{
-                                position: 'absolute',
-                                bottom: -80,
-                                left: -80,
-                                width: 200,
-                                height: 200,
-                                borderRadius: '50%',
-                                background: 'rgba(255,255,255,0.1)',
                                 zIndex: 0
                             }}
                         />
@@ -611,7 +626,7 @@ const WelcomePage = () => {
                 </motion.div>
 
                 {/* Stats Cards Section */}
-                <Box sx={{ mb: 8 }}>
+                <Box sx={{ mb: 8 }}>    
                     <Box sx={{
                         overflowX: 'auto',
                         pb: 2,
@@ -689,7 +704,7 @@ const WelcomePage = () => {
                                 </Grid>
                             ))}
                         </Grid> */}
-                        {/* <Grid container spacing={4}>
+                        <Grid container spacing={4}>
                             {statsCards.map((card, index) => (
                                 <Grid item xs={12} md={6} key={index}>
                                     <Paper
@@ -732,133 +747,6 @@ const WelcomePage = () => {
                                             ))}
                                         </Grid>
                                     </Paper>
-                                </Grid>
-                            ))}
-                        </Grid> */}
-                        {/* Stats Cards Grid */}
-                        <Grid container spacing={4} sx={{ mb: { xs: 6, md: 8 } }}>
-                            {statsCards.map((card, index) => (
-                                <Grid item xs={12} md={6} key={index}>
-                                    <motion.div
-                                        variants={bounceVariants}
-                                        initial="initial"
-                                        animate="animate"
-                                        whileHover={{
-                                            scale: 1.02,
-                                            transition: { duration: 0.2 }
-                                        }}
-                                    >
-                                        <Paper
-                                            elevation={0}
-                                            sx={{
-                                                height: { xs: '300px', md: '350px' }, // Reduced from 400px/450px
-                                                p: { xs: 3, md: 4 }, // Reduced padding
-                                                borderRadius: 6,
-                                                background: `${card.color}, ${card.bgPattern}`,
-                                                color: 'white',
-                                                position: 'relative',
-                                                overflow: 'hidden',
-                                                backdropFilter: 'blur(10px)',
-                                                border: '1px solid rgba(255,255,255,0.1)',
-                                                transition: 'all 0.3s ease-in-out',
-                                                display: 'flex',
-                                                flexDirection: 'column',
-                                                '&:hover': {
-                                                    transform: 'translateY(-8px)',
-                                                    boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
-                                                    '& .icon-container': {
-                                                        transform: 'scale(1.1) rotate(10deg)'
-                                                    }
-                                                }
-                                            }}
-                                        >
-                                            <Box
-                                                className="icon-container"
-                                                sx={{
-                                                    width: { xs: 60, md: 80 }, // Reduced from 80/100
-                                                    height: { xs: 60, md: 80 }, // Reduced from 80/100
-                                                    borderRadius: '50%',
-                                                    bgcolor: 'rgba(255,255,255,0.2)',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-                                                    mb: 3, // Reduced margin
-                                                    transition: 'all 0.3s ease',
-                                                    '& svg': {
-                                                        fontSize: { xs: 30, md: 40 }, // Reduced from 40/50
-                                                        color: 'white'
-                                                    }
-                                                }}
-                                            >
-                                                {card.icon}
-                                            </Box>
-
-                                            <Typography
-                                                variant="h4"
-                                                fontWeight="bold"
-                                                sx={{
-                                                    mb: 1.5, // Reduced margin
-                                                    fontSize: { xs: '1.5rem', md: '2rem' }, // Reduced from 1.75rem/2.25rem
-                                                    textShadow: '0 2px 4px rgba(0,0,0,0.1)'
-                                                }}
-                                            >
-                                                {card.title}
-                                            </Typography>
-
-                                            <Typography
-                                                variant="h2"
-                                                sx={{
-                                                    mb: 3, // Reduced margin
-                                                    fontSize: { xs: '2.5rem', md: '3.5rem' }, // Reduced from 3rem/4rem
-                                                    fontWeight: 'bold',
-                                                    textShadow: '0 2px 4px rgba(0,0,0,0.1)'
-                                                }}
-                                            >
-                                                {card.value}
-                                            </Typography>
-
-                                            <Grid container spacing={2} sx={{ mt: 'auto' }}>
-                                                {card.subStats.map((stat, i) => (
-                                                    <Grid item xs={4} key={i}>
-                                                        <Box
-                                                            sx={{
-                                                                p: { xs: 1.5, md: 2 }, // Reduced padding
-                                                                borderRadius: 4,
-                                                                bgcolor: 'rgba(255,255,255,0.1)',
-                                                                backdropFilter: 'blur(5px)',
-                                                                textAlign: 'center',
-                                                                transition: 'all 0.3s ease',
-                                                                '&:hover': {
-                                                                    transform: 'translateY(-4px)',
-                                                                    bgcolor: 'rgba(255,255,255,0.15)'
-                                                                }
-                                                            }}
-                                                        >
-                                                            <Typography
-                                                                variant="h4"
-                                                                fontWeight="bold"
-                                                                sx={{
-                                                                    mb: 0.5, // Reduced margin
-                                                                    fontSize: { xs: '1.25rem', md: '1.75rem' } // Reduced from 1.5rem/2rem
-                                                                }}
-                                                            >
-                                                                {stat.value}
-                                                            </Typography>
-                                                            <Typography
-                                                                variant="body2"
-                                                                sx={{
-                                                                    opacity: 0.9,
-                                                                    fontSize: { xs: '0.75rem', md: '0.875rem' } // Reduced from 0.875rem/1rem
-                                                                }}
-                                                            >
-                                                                {stat.label}
-                                                            </Typography>
-                                                        </Box>
-                                                    </Grid>
-                                                ))}
-                                            </Grid>
-                                        </Paper>
-                                    </motion.div>
                                 </Grid>
                             ))}
                         </Grid>
@@ -941,5 +829,3 @@ const WelcomePage = () => {
 };
 
 export default WelcomePage;
-
-

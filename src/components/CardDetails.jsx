@@ -4,17 +4,20 @@ import {
   Box,
   Container,
   Typography,
-  Paper,
   CircularProgress,
-  Divider,
   IconButton,
   Chip,
   Fade,
+  Grid,
 } from '@mui/material';
 import {
   ArrowBack,
   AccessTime,
   Category,
+  Description,
+  DateRange,
+  Info,
+  Label,
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import axios from 'axios';
@@ -80,170 +83,143 @@ const CardDetails = () => {
     <Box
       sx={{
         minHeight: '100vh',
-        py: 4,
         background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
         position: 'relative',
+        overflow: 'hidden',
       }}
     >
-      {/* Animated background elements */}
-      <Box sx={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 0, overflow: 'hidden' }}>
+      {/* Enhanced Animated Background */}
+      <Box sx={{ position: 'fixed', inset: 0, zIndex: 0, overflow: 'hidden' }}>
         <motion.div
           animate={{
             rotate: 360,
+            scale: [1, 1.1, 1],
             transition: { duration: 60, repeat: Infinity, ease: "linear" }
           }}
           style={{
             position: 'absolute',
             top: '-50%',
             right: '-50%',
-            width: '100%',
-            height: '100%',
-            background: 'radial-gradient(circle, rgba(99, 102, 241, 0.03) 0%, transparent 70%)',
+            width: '150%',
+            height: '150%',
+            background: 'radial-gradient(circle, rgba(99, 102, 241, 0.05) 0%, transparent 70%)',
+            filter: 'blur(40px)',
           }}
         />
         <motion.div
           animate={{
             rotate: -360,
+            scale: [1.1, 1, 1.1],
             transition: { duration: 50, repeat: Infinity, ease: "linear" }
           }}
           style={{
             position: 'absolute',
             bottom: '-50%',
             left: '-50%',
-            width: '100%',
-            height: '100%',
-            background: 'radial-gradient(circle, rgba(14, 165, 233, 0.03) 0%, transparent 70%)',
+            width: '150%',
+            height: '150%',
+            background: 'radial-gradient(circle, rgba(14, 165, 233, 0.05) 0%, transparent 70%)',
+            filter: 'blur(40px)',
           }}
         />
       </Box>
 
-      <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
+      <Container maxWidth="xl" sx={{ position: 'relative', zIndex: 1, py: { xs: 4, md: 6 } }}>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.6 }}
         >
-          {/* Back button */}
+          {/* Enhanced Back Button */}
           <IconButton
             onClick={handleBack}
             sx={{
               position: 'fixed',
-              top: 20,
-              left: { xs: 20, md: 40 },
+              top: { xs: 16, md: 24 },
+              left: { xs: 16, md: 24 },
               bgcolor: 'white',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+              width: { xs: 45, md: 54 },
+              height: { xs: 45, md: 54 },
               '&:hover': {
                 bgcolor: 'white',
-                transform: 'scale(1.1)',
+                transform: 'scale(1.1) rotate(-10deg)',
               },
-              transition: 'all 0.3s ease',
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
               zIndex: 10,
             }}
           >
             <ArrowBack />
           </IconButton>
 
-          <Paper
-            elevation={0}
-            sx={{
-              borderRadius: 4,
-              overflow: 'hidden',
-              background: 'rgba(255, 255, 255, 0.9)',
-              backdropFilter: 'blur(20px)',
-              boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
-            }}
-          >
-            {card.image && (
-              <Box
-                sx={{
-                  width: '100%',
-                  height: { xs: '300px', md: '500px' },
-                  overflow: 'hidden',
-                  position: 'relative',
-                }}
-              >
-                <img
-                  src={card.image}
-                  alt={card.title}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                  }}
-                />
-                <Box
-                  sx={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    background: 'linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.7) 100%)',
-                  }}
-                />
-                <Box
-                  sx={{
-                    position: 'absolute',
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    p: { xs: 3, md: 6 },
-                    color: 'white',
-                  }}
-                >
-                  <Fade in timeout={1000}>
-                    <Box>
-                      <Chip
-                        label={card.type}
-                        sx={{
-                          mb: 2,
-                          bgcolor: 'rgba(255,255,255,0.2)',
-                          color: 'white',
-                          backdropFilter: 'blur(4px)',
+          {/* Main Content */}
+          <Box sx={{ maxWidth: '1400px', margin: '0 auto', mt: { xs: 6, md: 8 } }}>
+            {/* Header Section */}
+            <Grid container spacing={4} alignItems="center" sx={{ mb: { xs: 4, md: 6 } }}>
+              {card.image && (
+                <Grid item xs={12} md={6}>
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.6 }}
+                  >
+                    <Box
+                      sx={{
+                        position: 'relative',
+                        borderRadius: '2rem',
+                        overflow: 'hidden',
+                        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15)',
+                        '&::before': {
+                          content: '""',
+                          position: 'absolute',
+                          inset: 0,
+                          background: 'linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.7) 100%)',
+                          zIndex: 1,
+                        },
+                      }}
+                    >
+                      <img
+                        src={card.image}
+                        alt={card.title}
+                        style={{
+                          width: '100%',
+                          height: '400px',
+                          objectFit: 'cover',
                         }}
-                        icon={<Category sx={{ color: 'white !important' }} />}
                       />
-                      <Typography
-                        variant="h3"
-                        sx={{
-                          fontWeight: 700,
-                          textShadow: '0 2px 4px rgba(0,0,0,0.3)',
-                          mb: 2,
-                        }}
-                      >
-                        {card.title}
-                      </Typography>
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 1,
-                        }}
-                      >
-                        <AccessTime sx={{ fontSize: 20 }} />
-                        <Typography variant="subtitle1">
-                          {new Date(card.createdAt).toLocaleDateString()}
-                        </Typography>
-                      </Box>
                     </Box>
-                  </Fade>
-                </Box>
-              </Box>
-            )}
+                  </motion.div>
+                </Grid>
+              )}
 
-            <Box sx={{ p: { xs: 3, md: 6 } }}>
-              {!card.image && (
-                <>
+              <Grid item xs={12} md={card.image ? 6 : 12}>
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.6, delay: 0.2 }}
+                >
                   <Chip
                     label={card.type}
-                    sx={{ mb: 2 }}
                     icon={<Category />}
+                    sx={{
+                      mb: 2,
+                      background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
+                      color: 'white',
+                      '& .MuiChip-icon': { color: 'white' },
+                      px: 2,
+                      height: 32,
+                    }}
                   />
                   <Typography
-                    variant="h3"
+                    variant="h2"
                     sx={{
-                      fontWeight: 700,
-                      mb: 2,
+                      fontWeight: 800,
+                      background: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      mb: 3,
+                      fontSize: { xs: '2.5rem', md: '3.5rem' },
+                      lineHeight: 1.2,
                     }}
                   >
                     {card.title}
@@ -252,126 +228,145 @@ const CardDetails = () => {
                     sx={{
                       display: 'flex',
                       alignItems: 'center',
-                      gap: 1,
-                      mb: 4,
+                      gap: 3,
+                      color: '#64748b',
                     }}
                   >
-                    <AccessTime sx={{ fontSize: 20 }} />
-                    <Typography variant="subtitle1" color="text.secondary">
-                      {new Date(card.createdAt).toLocaleDateString()}
-                    </Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <DateRange sx={{ fontSize: 20 }} />
+                      <Typography variant="subtitle1">
+                        {new Date(card.createdAt).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric',
+                        })}
+                      </Typography>
+                    </Box>
                   </Box>
-                </>
-              )}
+                </motion.div>
+              </Grid>
+            </Grid>
 
-              <Divider sx={{ my: 4 }} />
-
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3, duration: 0.5 }}
-              >
-                {card.description.map((block, index) => {
-                  switch (block.type) {
-                    case 'heading':
-                      return (
-                        <Typography
-                          key={block._id || index}
-                          variant="h4"
-                          sx={{
-                            fontWeight: 600,
-                            color: 'text.primary',
-                            mb: 3,
-                          }}
-                        >
-                          {block.value}
-                        </Typography>
-                      );
-                    case 'paragraph':
-                      return (
-                        <Typography
-                          key={block._id || index}
-                          variant="body1"
-                          sx={{
-                            color: 'text.secondary',
-                            mb: 4,
-                            lineHeight: 1.8,
-                            fontSize: '1.1rem',
-                          }}
-                        >
-                          {block.value}
-                        </Typography>
-                      );
-                    case 'list':
-                      return (
+            {/* Content Sections */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.6 }}
+            >
+              {card.description.map((block, index) => (
+                <Box
+                  key={block._id || index}
+                  sx={{
+                    mb: 6,
+                    position: 'relative',
+                    '&::before': {
+                      content: '""',
+                      position: 'absolute',
+                      left: -20,
+                      top: 0,
+                      bottom: 0,
+                      width: 4,
+                      borderRadius: 2,
+                      background: 'linear-gradient(to bottom, #6366f1, #4f46e5)',
+                      opacity: block.type === 'heading' ? 1 : 0,
+                    }
+                  }}
+                >
+                  {block.type === 'heading' && (
+                    <Typography
+                      variant="h3"
+                      sx={{
+                        fontWeight: 700,
+                        color: '#1e293b',
+                        mb: 3,
+                        fontSize: { xs: '1.75rem', md: '2.25rem' },
+                      }}
+                    >
+                      {block.value}
+                    </Typography>
+                  )}
+                  {block.type === 'paragraph' && (
+                    <Typography
+                      variant="body1"
+                      sx={{
+                        color: '#475569',
+                        lineHeight: 1.8,
+                        fontSize: '1.125rem',
+                        letterSpacing: '0.01em',
+                      }}
+                    >
+                      {block.value}
+                    </Typography>
+                  )}
+                  {block.type === 'list' && (
+                    <Box sx={{ pl: 3 }}>
+                      {block.value.split('\n').map((item, i) => (
                         <Box
-                          key={block._id || index}
-                          component="ul"
+                          key={i}
                           sx={{
-                            pl: 4,
-                            mb: 4,
+                            display: 'flex',
+                            alignItems: 'flex-start',
+                            gap: 2,
+                            mb: 2,
                           }}
                         >
-                          {block.value.split('\n').map((item, i) => (
-                            <Typography
-                              key={i}
-                              component="li"
-                              sx={{
-                                color: 'text.secondary',
-                                mb: 2,
-                                fontSize: '1.1rem',
-                              }}
-                            >
-                              {item}
-                            </Typography>
-                          ))}
-                        </Box>
-                      );
-                    case 'quote':
-                      return (
-                        <Paper
-                          key={block._id || index}
-                          elevation={0}
-                          sx={{
-                            p: 4,
-                            mb: 4,
-                            borderRadius: 2,
-                            background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(14, 165, 233, 0.1) 100%)',
-                            position: 'relative',
-                            '&::before': {
-                              content: '""',
-                              position: 'absolute',
-                              top: -20,
-                              left: 20,
-                              fontSize: '6rem',
-                              color: 'rgba(99, 102, 241, 0.2)',
-                              fontFamily: 'serif',
-                            }
-                          }}
-                        >
+                          <Label sx={{ color: '#6366f1', mt: 0.5 }} />
                           <Typography
-                            variant="h6"
                             sx={{
-                              fontStyle: 'italic',
-                              color: 'text.primary',
-                              lineHeight: 1.8,
+                              color: '#475569',
+                              fontSize: '1.125rem',
+                              lineHeight: 1.7,
                             }}
                           >
-                            {block.value}
+                            {item}
                           </Typography>
-                        </Paper>
-                      );
-                    default:
-                      return null;
-                  }
-                })}
-              </motion.div>
-            </Box>
-          </Paper>
+                        </Box>
+                      ))}
+                    </Box>
+                  )}
+                  {block.type === 'quote' && (
+                    <Box
+                      sx={{
+                        position: 'relative',
+                        p: { xs: 4, md: 6 },
+                        borderRadius: '1.5rem',
+                        background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(79, 70, 229, 0.08) 100%)',
+                        backdropFilter: 'blur(10px)',
+                        border: '1px solid rgba(99, 102, 241, 0.1)',
+                        '&::before': {
+                          content: '"❝"',
+                          position: 'absolute',
+                          top: -30,
+                          left: 30,
+                          fontSize: '6rem',
+                          color: 'rgba(99, 102, 241, 0.2)',
+                          fontFamily: 'Georgia, serif',
+                          lineHeight: 1,
+                        }
+                      }}
+                    >
+                      <Typography
+                        variant="h5"
+                        sx={{
+                          fontStyle: 'italic',
+                          color: '#1e293b',
+                          lineHeight: 1.8,
+                          position: 'relative',
+                          zIndex: 1,
+                        }}
+                      >
+                        {block.value}
+                      </Typography>
+                    </Box>
+                  )}
+                </Box>
+              ))}
+            </motion.div>
+          </Box>
         </motion.div>
       </Container>
     </Box>
   );
 };
 
-export default CardDetails; 
+export default CardDetails;

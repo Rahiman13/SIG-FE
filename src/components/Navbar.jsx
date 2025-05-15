@@ -22,6 +22,7 @@ import {
   DialogContent,
   DialogActions,
   TextField,
+  InputAdornment,
 } from '@mui/material';
 import {
   Menu as MenuIcon,
@@ -35,13 +36,16 @@ import {
   Dashboard,
   Add as AddIcon,
   Close as CloseIcon,
+  Title,  // Add this import
+  Description,  // Add this import
 } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Logo from '../assets/signavox-logo.png';
 import axios from 'axios';
 import BaseUrl from '../Api';
 import { toast } from 'react-toastify';
+import { LoadingButton } from '@mui/lab';
 
 const Navbar = () => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -116,6 +120,9 @@ const Navbar = () => {
     item.showAlways || (isAdmin && item.adminOnly)
   );
 
+  // Add this line near other state declarations
+  const location = useLocation(); // Add this hook at the top
+
   return (
     <>
       <AppBar 
@@ -172,7 +179,51 @@ const Navbar = () => {
                     sx={{ 
                       textTransform: 'none',
                       fontWeight: 600,
-                      fontSize: '1rem'
+                      fontSize: '1rem',
+                      position: 'relative',
+                      px: 2.5,
+                      py: 1,
+                      borderRadius: '12px',
+                      overflow: 'hidden',
+                      '&::before': {
+                        content: '""',
+                        position: 'absolute',
+                        inset: 0,
+                        borderRadius: '12px',
+                        // background: location.pathname === item.path ? 
+                        //   'linear-gradient(135deg, rgba(79, 70, 229, 0.15) 0%, rgba(59, 130, 246, 0.15) 100%)' : 
+                        //   'transparent',
+                        transition: 'all 0.3s ease',
+                      },
+                      '&::after': {
+                        content: '""',
+                        position: 'absolute',
+                        bottom: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '3px',
+                        background: 'linear-gradient(90deg, #4f46e5, #3b82f6)',
+                        transform: location.pathname === item.path ? 'scaleX(1)' : 'scaleX(0)',
+                        transformOrigin: 'left',
+                        transition: 'transform 0.3s ease',
+                      },
+                      '& .MuiButton-startIcon': {
+                        color: location.pathname === item.path ? '#4f46e5' : 'inherit',
+                        transform: location.pathname === item.path ? 'scale(1.1)' : 'scale(1)',
+                        transition: 'all 0.3s ease',
+                      },
+                      '& .MuiButton-label': {
+                        color: location.pathname === item.path ? '#4f46e5' : 'inherit',
+                        fontWeight: location.pathname === item.path ? 700 : 600,
+                      },
+                      '&:hover': {
+                        '&::before': {
+                          // background: 'linear-gradient(135deg, rgba(79, 70, 229, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%)',
+                        },
+                        '&::after': {
+                          transform: 'scaleX(1)',
+                        },
+                      }
                     }}
                   >
                     {item.title}
@@ -283,9 +334,62 @@ const Navbar = () => {
                 navigate(item.path);
                 handleDrawerToggle();
               }}
+              sx={{
+                position: 'relative',
+                my: 0.5,
+                mx: 1,
+                borderRadius: '10px',
+                overflow: 'hidden',
+                '&::before': {
+                  content: '""',
+                  position: 'absolute',
+                  inset: 0,
+                  background: location.pathname === item.path ? 
+                    'linear-gradient(135deg, rgba(79, 70, 229, 0.15) 0%, rgba(59, 130, 246, 0.15) 100%)' : 
+                    'transparent',
+                  transition: 'all 0.3s ease',
+                },
+                '&:hover': {
+                  '&::before': {
+                    background: 'linear-gradient(135deg, rgba(79, 70, 229, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%)',
+                  },
+                }
+              }}
             >
-              <ListItemIcon>{item.icon}</ListItemIcon>
-              <ListItemText primary={item.title} />
+              <ListItemIcon 
+                sx={{
+                  color: location.pathname === item.path ? '#4f46e5' : 'inherit',
+                  transition: 'all 0.3s ease',
+                  transform: location.pathname === item.path ? 'scale(1.1)' : 'scale(1)',
+                }}
+              >
+                {item.icon}
+              </ListItemIcon>
+              <ListItemText 
+                primary={item.title} 
+                sx={{
+                  '& .MuiTypography-root': {
+                    fontWeight: location.pathname === item.path ? 700 : 500,
+                    color: location.pathname === item.path ? '#4f46e5' : 'inherit',
+                    transition: 'all 0.3s ease',
+                  }
+                }}
+              />
+              {location.pathname === item.path && (
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    right: 0,
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    width: '4px',
+                    height: '60%',
+                    background: 'linear-gradient(to bottom, #4f46e5, #3b82f6)',
+                    borderRadius: '4px 0 0 4px',
+                    boxShadow: '0 0 10px rgba(79, 70, 229, 0.3)',
+                  }}
+                />
+              )}
             </ListItem>
           ))}
           {!isAdmin && (
@@ -303,7 +407,7 @@ const Navbar = () => {
         </List>
       </Drawer>
 
-      {/* Ticket Creation Modal */}
+      {/* Enhanced Ticket Creation Modal */}
       <Dialog
         open={openTicketModal}
         onClose={() => setOpenTicketModal(false)}
@@ -311,37 +415,80 @@ const Navbar = () => {
         fullWidth
         PaperProps={{
           sx: {
-            borderRadius: '16px',
-            background: 'rgba(255, 255, 255, 0.9)',
-            backdropFilter: 'blur(10px)',
+            borderRadius: '24px',
+            background: 'rgba(255, 255, 255, 0.95)',
+            backdropFilter: 'blur(20px) saturate(180%)',
+            WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+            border: '1px solid rgba(255, 255, 255, 0.3)',
+            boxShadow: '0 10px 30px rgba(0, 0, 0, 0.1)',
+            overflow: 'hidden',
           }
         }}
       >
-        <DialogTitle sx={{ 
-          pb: 2,
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center'
-        }}>
+        <DialogTitle 
+          sx={{ 
+            pb: 2,
+            background: 'linear-gradient(135deg, rgba(79, 70, 229, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%)',
+            borderBottom: '1px solid rgba(0, 0, 0, 0.1)',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}
+        >
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <ConfirmationNumber color="primary" />
-            <Typography variant="h6">Raise New Ticket</Typography>
+            <ConfirmationNumber 
+              sx={{ 
+                fontSize: 28,
+                color: 'primary.main',
+                opacity: 0.8
+              }} 
+            />
+            <Typography variant="h6" sx={{ fontWeight: 600 }}>
+              Raise New Ticket
+            </Typography>
           </Box>
           <IconButton 
             onClick={() => setOpenTicketModal(false)}
             size="small"
+            sx={{
+              '&:hover': {
+                transform: 'rotate(90deg)',
+                transition: 'transform 0.3s ease-in-out'
+              }
+            }}
           >
             <CloseIcon />
           </IconButton>
         </DialogTitle>
         <DialogContent dividers>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
+          <Box sx={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            gap: 3, 
+            pt: 2,
+            '& .MuiTextField-root': {
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '12px',
+                '&:hover fieldset': {
+                  borderColor: 'primary.main',
+                  borderWidth: '2px',
+                },
+              },
+            }
+          }}>
             <TextField
               fullWidth
               label="Title"
               value={ticketData.title}
               onChange={(e) => setTicketData({ ...ticketData, title: e.target.value })}
               required
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Title sx={{ color: 'primary.main', opacity: 0.7 }} />
+                  </InputAdornment>
+                ),
+              }}
             />
             <TextField
               fullWidth
@@ -351,29 +498,45 @@ const Navbar = () => {
               required
               multiline
               rows={4}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Description sx={{ color: 'primary.main', opacity: 0.7 }} />
+                  </InputAdornment>
+                ),
+              }}
             />
           </Box>
         </DialogContent>
-        <DialogActions sx={{ p: 2.5 }}>
-          <Button 
+        <DialogActions sx={{ p: 2.5, gap: 1 }}>
+          <Button
             onClick={() => setOpenTicketModal(false)}
             variant="outlined"
-            startIcon={<CloseIcon />}
+            color="inherit"
+            sx={{ 
+              borderRadius: '12px',
+              textTransform: 'none',
+              px: 3
+            }}
           >
             Cancel
           </Button>
-          <Button
+          <LoadingButton
             onClick={handleCreateTicket}
+            loading={submitting}
             variant="contained"
-            disabled={submitting || !ticketData.title || !ticketData.description}
-            startIcon={<AddIcon />}
-            sx={{
-              background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
-              color: 'white',
+            sx={{ 
+              borderRadius: '12px',
+              textTransform: 'none',
+              px: 3,
+              background: 'linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%)',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #4338ca 0%, #2563eb 100%)',
+              }
             }}
           >
-            {submitting ? 'Submitting...' : 'Submit Ticket'}
-          </Button>
+            Submit Ticket
+          </LoadingButton>
         </DialogActions>
       </Dialog>
     </>

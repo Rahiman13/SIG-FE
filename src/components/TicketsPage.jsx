@@ -50,89 +50,99 @@ import BaseUrl from '../Api';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
 
-// Enhanced Styled Components
+
 const MetricCard = styled(motion.div)(({ theme, color }) => ({
   height: '100%',
-  minHeight: '180px',
-  borderRadius: '24px',
-  background: `linear-gradient(135deg, ${alpha(color, 0.12)} 0%, ${alpha(color, 0.05)} 100%)`,
+  width: '100%',
+  minHeight: '200px',
+  borderRadius: '30px',
+  background: `linear-gradient(165deg, 
+    ${alpha(color, 0.15)} 0%, 
+    ${alpha(color, 0.05)} 40%,
+    ${alpha(color, 0.02)} 100%)`,
   backdropFilter: 'blur(10px)',
-  border: `2px solid ${alpha(color, 0.1)}`,
-  boxShadow: `0 10px 30px -5px ${alpha(color, 0.2)}`,
+  border: `1px solid ${alpha(color, 0.2)}`,
   position: 'relative',
   overflow: 'hidden',
-  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+  transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
   '&:hover': {
-    transform: 'translateY(-8px) scale(1.02)',
-    boxShadow: `0 20px 40px -10px ${alpha(color, 0.3)}`,
+    transform: 'translateY(-12px) scale(1.02)',
     '& .metric-icon': {
-      transform: 'scale(1.1) rotate(10deg)',
+      transform: 'scale(1.2) rotate(10deg)',
     },
-    '& .metric-shine': {
-      transform: 'rotate(45deg) translate(100%, -100%)',
+    '& .metric-background': {
+      transform: 'scale(1.1)',
+      opacity: 0.15,
     },
     '& .metric-glow': {
       opacity: 0.8,
+    },
+    '& .metric-shine': {
+      transform: 'translateX(100%)',
     }
   },
   '&::before': {
     content: '""',
     position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: '100%',
-    background: `linear-gradient(180deg, ${alpha(color, 0.15)} 0%, transparent 100%)`,
-    borderRadius: '24px',
-  },
-  '& .metric-shine': {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: '200%',
-    height: '200%',
-    background: `linear-gradient(45deg, transparent 40%, ${alpha(color, 0.1)} 45%, ${alpha(color, 0.2)} 50%, ${alpha(color, 0.1)} 55%, transparent 60%)`,
-    transform: 'rotate(45deg) translate(-100%, 100%)',
-    transition: 'transform 0.7s ease',
-  },
-  '& .metric-glow': {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    width: '120%',
-    height: '120%',
-    background: `radial-gradient(circle, ${alpha(color, 0.4)} 0%, transparent 70%)`,
-    transform: 'translate(-50%, -50%)',
-    opacity: 0,
-    transition: 'opacity 0.3s ease',
-    pointerEvents: 'none',
-  }
-}));
-
-const MetricIconWrapper = styled(Box)(({ color }) => ({
-  width: '60px',
-  height: '60px',
-  borderRadius: '20px',
-  background: `linear-gradient(135deg, ${alpha(color, 0.2)} 0%, ${alpha(color, 0.1)} 100%)`,
-  backdropFilter: 'blur(5px)',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  marginBottom: '16px',
-  position: 'relative',
-  transition: 'transform 0.3s ease',
-  '&::after': {
-    content: '""',
-    position: 'absolute',
-    inset: '-2px',
-    borderRadius: '22px',
-    padding: '2px',
-    background: `linear-gradient(135deg, ${alpha(color, 0.4)} 0%, transparent 100%)`,
+    inset: 0,
+    padding: '1px',
+    borderRadius: '30px',
+    background: `linear-gradient(135deg, ${alpha(color, 0.4)} 0%, transparent 50%, ${alpha(color, 0.2)} 100%)`,
     WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
     WebkitMaskComposite: 'xor',
     maskComposite: 'exclude',
   }
 }));
+
+const MetricIconWrapper = styled(Box)(({ color }) => ({
+  width: '70px',
+  height: '70px',
+  borderRadius: '24px',
+  background: `linear-gradient(135deg, ${alpha(color, 0.3)} 0%, ${alpha(color, 0.1)} 100%)`,
+  backdropFilter: 'blur(8px)',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  position: 'relative',
+  transition: 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+  zIndex: 2,
+  '&::before': {
+    content: '""',
+    position: 'absolute',
+    inset: '-2px',
+    borderRadius: '26px',
+    padding: '2px',
+    background: `linear-gradient(135deg, ${alpha(color, 0.6)} 0%, transparent 100%)`,
+    WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+    WebkitMaskComposite: 'xor',
+    maskComposite: 'exclude',
+  }
+}));
+
+// Add these new styled components
+const MetricBackground = styled(Box)(({ color }) => ({
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  width: '150%',
+  height: '150%',
+  transform: 'translate(-50%, -50%)',
+  background: `radial-gradient(circle at center, ${alpha(color, 0.2)} 0%, transparent 70%)`,
+  opacity: 0.1,
+  transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+  zIndex: 0,
+}));
+
+const MetricShine = styled(Box)({
+  position: 'absolute',
+  top: 0,
+  left: '-100%',
+  width: '100%',
+  height: '100%',
+  background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)',
+  transition: 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+  zIndex: 1,
+});
 
 const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
   borderRadius: '24px',
@@ -293,7 +303,7 @@ const TicketsPage = () => {
     if (result.isConfirmed) {
       try {
         const newStatus = currentStatus === 'Open' ? 'Resolved' : 'Open';
-        
+
         // Prepare update data with all required fields
         const updateData = {
           title: ticket.title,
@@ -302,7 +312,7 @@ const TicketsPage = () => {
         };
 
         console.log('Updating ticket with data:', updateData);
-        
+
         const response = await axios.put(
           `${BaseUrl}/tickets/${ticket._id}`,
           updateData,
@@ -374,37 +384,66 @@ const TicketsPage = () => {
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
       {/* Enhanced Header Section */}
-      <Box sx={{ mb: 6 }}>
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <Typography
-            variant="h4"
-            component="h1"
-            fontWeight="bold"
-            sx={{
-              background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #60a5fa 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              mb: 1,
-              display: 'inline-block'
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, ease: "easeOut" }}
+      >
+        <Box sx={{
+          mb: 4,
+          p: 4,
+          borderRadius: 4,
+          background: 'linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%)',
+          boxShadow: '0 10px 25px -5px rgba(59, 130, 246, 0.5)',
+          color: 'white',
+          position: 'relative',
+          overflow: 'hidden'
+        }}>
+          {/* Animated decorative elements */}
+          <motion.div
+            animate={{
+              y: [0, -10, 0],
+              transition: { duration: 3, repeat: Infinity, repeatType: "reverse" }
             }}
-          >
-            Support Tickets Dashboard
-          </Typography>
-        </motion.div>
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-        >
-          <Typography variant="body1" color="text.secondary">
-            Track and manage support requests efficiently
-          </Typography>
-        </motion.div>
-      </Box>
+            style={{
+              position: 'absolute',
+              top: -100,
+              right: -100,
+              width: 300,
+              height: 300,
+              borderRadius: '50%',
+              background: 'rgba(255,255,255,0.1)',
+              zIndex: 0
+            }}
+          />
+          <motion.div
+            animate={{
+              y: [0, -10, 0],
+              transition: { duration: 3, repeat: Infinity, repeatType: "reverse", delay: 1 }
+            }}
+            style={{
+              position: 'absolute',
+              bottom: -80,
+              left: -80,
+              width: 200,
+              height: 200,
+              borderRadius: '50%',
+              background: 'rgba(255,255,255,0.1)',
+              zIndex: 0
+            }}
+          />
+          <Box sx={{ position: 'relative', zIndex: 1 }}>
+            <Typography variant="h4" fontWeight="bold" gutterBottom>
+
+              Support Tickets Dashboard
+            </Typography>
+            <Typography variant="body1" sx={{ opacity: 0.9, mb: 2, maxWidth: '800px' }}>
+
+              Track and manage support requests efficiently
+            </Typography>
+          </Box>
+        </Box>
+      </motion.div>
 
       {/* Enhanced Metrics Section */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
@@ -422,9 +461,9 @@ const TicketsPage = () => {
                   <MetricIconWrapper color={metric.color} className="metric-icon">
                     {React.cloneElement(metric.icon, { sx: { color: metric.color } })}
                   </MetricIconWrapper>
-                  <Typography 
-                    variant="h6" 
-                    sx={{ 
+                  <Typography
+                    variant="h6"
+                    sx={{
                       color: alpha(metric.color, 0.9),
                       fontWeight: 600,
                       mb: 1
@@ -534,7 +573,7 @@ const TicketsPage = () => {
               <TableRow key={ticket._id} hover>
                 <TableCell>{ticket.title}</TableCell>
                 <TableCell>
-                  <Tooltip 
+                  <Tooltip
                     title={ticket.description}
                     TransitionComponent={Zoom}
                     placement="top-start"
@@ -567,7 +606,7 @@ const TicketsPage = () => {
                   />
                 </TableCell>
                 <TableCell>
-                  <Tooltip 
+                  <Tooltip
                     title={`Employee ID: ${ticket.raisedBy.employeeId}`}
                     TransitionComponent={Zoom}
                   >

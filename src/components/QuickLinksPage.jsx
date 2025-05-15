@@ -32,6 +32,8 @@ import {
   OpenInNew,
 } from '@mui/icons-material';
 import axios from 'axios';
+import { motion, AnimatePresence } from 'framer-motion';
+
 import BaseUrl from '../Api';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -39,7 +41,7 @@ import Swal from 'sweetalert2';
 
 // Styled Components
 const StyledCard = styled(Card)(({ theme }) => ({
-  height: '220px', // Fixed height
+  height: '200px', // Fixed height
   width: '280px', // Fixed width
   display: 'flex',
   flexDirection: 'column',
@@ -257,32 +259,65 @@ const QuickLinksPage = () => {
       <ToastContainer position="top-right" autoClose={3000} />
 
       <Box
+        maxWidth="xl"
         sx={{
-          maxWidth: '1200px',
+          // maxWidth: '1400px',
           margin: '0 auto',
           mb: 6,
           display: 'flex',
           flexDirection: { xs: 'column', sm: 'row' },
           justifyContent: 'space-between',
           alignItems: { xs: 'stretch', sm: 'center' },
-          gap: 2
+          gap: 2,
+          mb: 4,
+          p: 4,
+          borderRadius: 4,
+          background: 'linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%)',
+          boxShadow: '0 10px 25px -5px rgba(59, 130, 246, 0.5)',
+          color: 'white',
+          position: 'relative',
+          overflow: 'hidden'
         }}
       >
+        {/* Animated decorative elements */}
+        <motion.div
+          animate={{
+            y: [0, -10, 0],
+            transition: { duration: 3, repeat: Infinity, repeatType: "reverse" }
+          }}
+          style={{
+            position: 'absolute',
+            top: -100,
+            right: -100,
+            width: 300,
+            height: 300,
+            borderRadius: '50%',
+            background: 'rgba(255,255,255,0.1)',
+            zIndex: 0
+          }}
+        />
+        <motion.div
+          animate={{
+            y: [0, -10, 0],
+            transition: { duration: 3, repeat: Infinity, repeatType: "reverse", delay: 1 }
+          }}
+          style={{
+            position: 'absolute',
+            bottom: -80,
+            left: -80,
+            width: 200,
+            height: 200,
+            borderRadius: '50%',
+            background: 'rgba(255,255,255,0.1)',
+            zIndex: 0
+          }}
+        />
         <Box>
-          <Typography
-            variant="h4"
-            component="h1"
-            fontWeight="bold"
-            sx={{
-              background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              mb: 1
-            }}
-          >
+          <Typography variant="h4" fontWeight="bold" gutterBottom>
+
             Quick Links
           </Typography>
-          <Typography variant="body1" color="text.secondary">
+          <Typography variant="body1" sx={{ opacity: 0.9, mb: 2, maxWidth: '800px' }}>
             Access your frequently used resources in one place
           </Typography>
         </Box>
@@ -310,12 +345,13 @@ const QuickLinksPage = () => {
       </Box>
 
       <Box
+        maxWidth="xl"
         sx={{
-          maxWidth: '1200px',
+          // maxWidth: '1200px',
           margin: '0 auto',
         }}
       >
-        <Box sx={{ maxWidth: '1200px', margin: '0 auto', mb: 4 }}>
+        <Box sx={{  margin: '0 auto', mb: 4 }}>
           {/* Search Bar */}
           <Box sx={{ mb: 4 }}>
             <TextField
@@ -340,20 +376,19 @@ const QuickLinksPage = () => {
           </Box>
 
           {/* Grid Container */}
-          {/* // In the Grid container section, update the Grid item */}
-          <Grid container spacing={3} sx={{ justifyContent: 'flex-start' }}>
+          <Grid container spacing={3} sx={{ justifyContent: 'flex-start' }} className="mb-4">
             {displayedLinks.map((link) => (
               <Grid item key={link._id} sx={{ width: '280px' }}>
-                <StyledCard>
+                <StyledCard onClick={() => handleCardClick(link.link)}>
                   <CardShine className="card-shine" />
-                  <CardContent sx={{ 
-                    p: 2, 
+                  <CardContent sx={{
+                    p: 2,
                     height: '100%',
                     display: 'flex',
                     flexDirection: 'column'
                   }}>
-                    <Typography 
-                      variant="h6" 
+                    <Typography
+                      variant="h6"
                       sx={{
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
@@ -390,11 +425,10 @@ const QuickLinksPage = () => {
                         pt: 1,
                         borderTop: '1px solid rgba(0,0,0,0.08)'
                       }}
-                      onClick={(e) => e.stopPropagation()}
                     >
-                      <LinkIcon 
-                        fontSize="small" 
-                        color="primary" 
+                      <LinkIcon
+                        fontSize="small"
+                        color="primary"
                         sx={{ fontSize: '1rem' }}
                       />
                       <Typography
@@ -407,16 +441,15 @@ const QuickLinksPage = () => {
                           whiteSpace: 'nowrap',
                           fontSize: '0.75rem'
                         }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleCardClick(link.link);
-                        }}
                       >
                         {link.link}
                       </Typography>
                     </Box>
                   </CardContent>
-                  <CardOverlay className="card-overlay">
+                  <CardOverlay
+                    className="card-overlay"
+                    onClick={(e) => e.stopPropagation()} // Prevent card click when clicking overlay
+                  >
                     <Tooltip title="Edit" TransitionComponent={Zoom}>
                       <IconButton
                         size="small"
@@ -459,9 +492,9 @@ const QuickLinksPage = () => {
           </Grid>
 
           {/* Pagination - Moved to bottom */}
-          <Box sx={{ 
-            display: 'flex', 
-            justifyContent: 'center', 
+          <Box sx={{
+            display: 'flex',
+            justifyContent: 'center',
             mt: 'auto',
             pt: 4,
             borderTop: '1px solid rgba(0,0,0,0.08)'
