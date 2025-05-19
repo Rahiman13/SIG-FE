@@ -182,7 +182,7 @@ const EmployeesPage = () => {
         status: 'Active',
     });
 
-    const roles = ['CEO', 'HR', 'Manager', 'Developer', 'DevOps', 'BDE', 'Support', 'Other'];
+    const roles = ['CEO', 'HR', 'Manager', 'Developer', 'DevOps', 'BDE', 'Other'];
     const teams = ['Operations', 'Technical', 'Finance', 'Marketing', 'Other'];
     const bloodGroups = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
 

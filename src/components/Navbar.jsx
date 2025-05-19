@@ -123,6 +123,10 @@ const Navbar = () => {
   // Add this line near other state declarations
   const location = useLocation(); // Add this hook at the top
 
+  const handleTicketClick = () => {
+    navigate('/tickets');
+  };
+
   return (
     <>
       <AppBar 
@@ -238,7 +242,7 @@ const Navbar = () => {
                   <Button
                     color="primary"
                     startIcon={<ConfirmationNumber />}
-                    onClick={() => setOpenTicketModal(true)}
+                    onClick={handleTicketClick}
                     sx={{ 
                       textTransform: 'none',
                       fontWeight: 600,
@@ -395,10 +399,7 @@ const Navbar = () => {
           {!isAdmin && (
             <ListItem 
               button 
-              onClick={() => {
-                setOpenTicketModal(true);
-                handleDrawerToggle();
-              }}
+              onClick={handleTicketClick}
             >
               <ListItemIcon><ConfirmationNumber /></ListItemIcon>
               <ListItemText primary="Raise Ticket" />

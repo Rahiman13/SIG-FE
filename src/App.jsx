@@ -58,7 +58,12 @@ function App() {
               } 
             /> */}
 
-            <Route path="/employees" element={<EmployeesPage />} />
+
+            <Route path="/employees" element={
+              <ProtectedRoute>
+                <EmployeesPage />
+              </ProtectedRoute>
+            } />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/cards" element={<CardsPage />} />
             <Route path="/cards/:id" element={<CardDetailsPage />} />

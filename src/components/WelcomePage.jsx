@@ -130,13 +130,17 @@ const WelcomePage = () => {
                     axios.get(`${BaseUrl}/employees/count`, {
                         headers: { 'Authorization': `Bearer ${token}` }
                     }),
-                    axios.get(`${BaseUrl}/tickets/ticket-stats/by-status`, {
+                    axios.get(`${BaseUrl}/tickets/stats`, {
                         headers: { 'Authorization': `Bearer ${token}` }
                     })
                 ]);
 
                 setEmployeeStats(employeeResponse.data);
-                setTicketStats(ticketResponse.data.data);
+                setTicketStats({
+                    Open: ticketResponse.data.open || 0,
+                    Resolved: ticketResponse.data.resolved || 0,
+                    Breached: ticketResponse.data.breached || 0
+                });
             } catch (error) {
                 console.error('Error fetching stats:', error);
             }
@@ -767,7 +771,7 @@ const WelcomePage = () => {
                                                     transform: 'translateY(-8px)',
                                                     boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
                                                     '& .icon-container': {
-                                                        transform: 'scale(1.1) rotate(10deg)'
+                                                        // transform: 'scale(1.1) rotate(10deg)'
                                                     }
                                                 }
                                             }}

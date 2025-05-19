@@ -17,32 +17,36 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Chip,
   Grid,
-  Card,
-  CardContent,
   InputAdornment,
-  Tooltip,
-  Zoom,
-  TablePagination,
-  CircularProgress,
   alpha,
+  CircularProgress,
+  Tooltip,
+  Avatar,
+  Chip,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import {
   Add,
   Close,
   Search,
-  Title as TitleIcon,
-  Description as DescriptionIcon,
   ErrorOutline,
   CheckCircleOutline,
-  WarningAmber,
   AccessTime,
-  Refresh,
-  ArrowUpward,
   Timeline,
-  PriorityHigh,
+  Upload as UploadIcon,
+  Description as DescriptionIcon,
+  Title as TitleIcon,
+  Person as PersonIcon,
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+  Forward as ForwardIcon,
+  Update as UpdateIcon,
+  Visibility as VisibilityIcon
 } from '@mui/icons-material';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
@@ -50,99 +54,37 @@ import BaseUrl from '../Api';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
 
-
 const MetricCard = styled(motion.div)(({ theme, color }) => ({
   height: '100%',
-  width: '100%',
+  width: '350px',
+  maxWidth: '500px',
   minHeight: '200px',
-  borderRadius: '30px',
+  borderRadius: '20px',
   background: `linear-gradient(165deg, 
-    ${alpha(color, 0.15)} 0%, 
+    ${alpha(color, 0.12)} 0%, 
     ${alpha(color, 0.05)} 40%,
-    ${alpha(color, 0.02)} 100%)`,
+    rgba(255, 255, 255, 0.05) 100%)`,
   backdropFilter: 'blur(10px)',
-  border: `1px solid ${alpha(color, 0.2)}`,
+  border: `1px solid ${alpha(color, 0.15)}`,
   position: 'relative',
   overflow: 'hidden',
   transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+  display: 'flex',
+  flexDirection: 'column',
+  padding: '24px',
   '&:hover': {
-    transform: 'translateY(-12px) scale(1.02)',
-    '& .metric-icon': {
-      transform: 'scale(1.2) rotate(10deg)',
-    },
+    transform: 'translateY(-8px)',
+    boxShadow: `0 20px 40px ${alpha(color, 0.2)}`,
     '& .metric-background': {
-      transform: 'scale(1.1)',
+      transform: 'scale(1.2) rotate(10deg)',
       opacity: 0.15,
     },
-    '& .metric-glow': {
-      opacity: 0.8,
-    },
-    '& .metric-shine': {
-      transform: 'translateX(100%)',
+    '& .metric-icon': {
+      transform: 'scale(1.1)',
+      background: `linear-gradient(135deg, ${alpha(color, 0.4)} 0%, ${alpha(color, 0.2)} 100%)`,
     }
-  },
-  '&::before': {
-    content: '""',
-    position: 'absolute',
-    inset: 0,
-    padding: '1px',
-    borderRadius: '30px',
-    background: `linear-gradient(135deg, ${alpha(color, 0.4)} 0%, transparent 50%, ${alpha(color, 0.2)} 100%)`,
-    WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-    WebkitMaskComposite: 'xor',
-    maskComposite: 'exclude',
   }
 }));
-
-const MetricIconWrapper = styled(Box)(({ color }) => ({
-  width: '70px',
-  height: '70px',
-  borderRadius: '24px',
-  background: `linear-gradient(135deg, ${alpha(color, 0.3)} 0%, ${alpha(color, 0.1)} 100%)`,
-  backdropFilter: 'blur(8px)',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  position: 'relative',
-  transition: 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-  zIndex: 2,
-  '&::before': {
-    content: '""',
-    position: 'absolute',
-    inset: '-2px',
-    borderRadius: '26px',
-    padding: '2px',
-    background: `linear-gradient(135deg, ${alpha(color, 0.6)} 0%, transparent 100%)`,
-    WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-    WebkitMaskComposite: 'xor',
-    maskComposite: 'exclude',
-  }
-}));
-
-// Add these new styled components
-const MetricBackground = styled(Box)(({ color }) => ({
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  width: '150%',
-  height: '150%',
-  transform: 'translate(-50%, -50%)',
-  background: `radial-gradient(circle at center, ${alpha(color, 0.2)} 0%, transparent 70%)`,
-  opacity: 0.1,
-  transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-  zIndex: 0,
-}));
-
-const MetricShine = styled(Box)({
-  position: 'absolute',
-  top: 0,
-  left: '-100%',
-  width: '100%',
-  height: '100%',
-  background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)',
-  transition: 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
-  zIndex: 1,
-});
 
 const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
   borderRadius: '24px',
@@ -164,114 +106,568 @@ const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
   },
 }));
 
-const StatusButton = styled(Button)(({ theme, status }) => {
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'Open': return theme.palette.primary.main;
-      case 'Resolved': return theme.palette.success.main;
-      case 'Breached': return theme.palette.error.main;
-      default: return theme.palette.warning.main;
-    }
-  };
-
-  return {
-    borderRadius: '12px',
-    padding: '6px 16px',
-    textTransform: 'none',
-    backgroundColor: alpha(getStatusColor(status), 0.1),
-    color: getStatusColor(status),
-    border: `1px solid ${alpha(getStatusColor(status), 0.2)}`,
-    '&:hover': {
-      backgroundColor: alpha(getStatusColor(status), 0.2),
-      border: `1px solid ${alpha(getStatusColor(status), 0.3)}`,
-    },
-  };
-});
-
-const StyledDialog = styled(Dialog)(({ theme }) => ({
-  '& .MuiDialogContent-root': {
-    padding: theme.spacing(3),
-  },
-  '& .MuiDialogActions-root': {
-    padding: theme.spacing(2),
-  },
-  '& .MuiDialogTitle-root': {
-    padding: theme.spacing(2),
-    '& .MuiTypography-root': {
-      fontSize: '1.5rem',
-      fontWeight: 600,
-    },
-  },
-}));
-
 const TicketsPage = () => {
   const [tickets, setTickets] = useState([]);
+  const [stats, setStats] = useState({ total: 0, open: 0, resolved: 0, breached: 0 });
   const [openDialog, setOpenDialog] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
+    image: null
   });
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [forwardDialogOpen, setForwardDialogOpen] = useState(false);
+  const [selectedTicket, setSelectedTicket] = useState(null);
+  const [editFormData, setEditFormData] = useState({
+    title: '',
+    description: '',
+    image: null
+  });
+  const [supportEmployees, setSupportEmployees] = useState([]);
+  const [selectedEmployee, setSelectedEmployee] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [statusDialogOpen, setStatusDialogOpen] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState('');
+  const [selectedStatusTicket, setSelectedStatusTicket] = useState(null);
+  const [viewDialogOpen, setViewDialogOpen] = useState(false);
+  const [selectedTicketDetails, setSelectedTicketDetails] = useState(null);
 
   const token = localStorage.getItem('token');
+  const userDataString = localStorage.getItem('userData');
+  const userData = JSON.parse(userDataString);
+  const isAdmin = userData?.isAdmin || false;
 
-  // Metrics calculation
-  const metrics = {
-    total: tickets.length,
-    open: tickets.filter(ticket => ticket.status === 'Open').length,
-    breached: tickets.filter(ticket => ticket.status === 'Breached').length,
-    resolved: tickets.filter(ticket => ticket.status === 'Resolved').length,
-  };
+  const metricConfigs = [
+    {
+      title: 'Total Tickets',
+      value: stats.total,
+      color: '#3b82f6',
+      icon: <Timeline />,
+      description: 'All tickets in system'
+    },
+    {
+      title: 'Open Tickets',
+      value: stats.open,
+      color: '#0ea5e9',
+      icon: <AccessTime />,
+      description: 'Awaiting resolution'
+    },
+    {
+      title: 'Resolved Tickets',
+      value: stats.resolved,
+      color: '#22c55e',
+      icon: <CheckCircleOutline />,
+      description: 'Successfully completed'
+    },
+    {
+      title: 'Breached SLA',
+      value: stats.breached,
+      color: '#ef4444',
+      icon: <ErrorOutline />,
+      description: 'Past due date'
+    }
+  ];
 
-  // Fetch tickets
-  const fetchTickets = async () => {
+  const fetchMyTicketStats = async () => {
     try {
-      const response = await axios.get(`${BaseUrl}/tickets`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+      const userData = JSON.parse(localStorage.getItem('userData'));
+      if (!userData || !userData._id) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'User data not found. Please login again.',
+        });
+        return;
+      }
+
+      const response = await axios.get(`${BaseUrl}/tickets/my-ticket-stats/${userData._id}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
       });
-      setTickets(response.data);
+
+      setStats({
+        total: response.data.total,
+        open: response.data.open,
+        resolved: response.data.resolved,
+        breached: response.data.breached
+      });
     } catch (error) {
-      console.error('Error fetching tickets:', error);
-      toast.error('Failed to load tickets');
+      console.error('Error fetching ticket stats:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Failed to load ticket statistics',
+      });
     }
   };
 
   useEffect(() => {
-    fetchTickets();
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData?.isAdmin || userData?.role === 'Support') {
+      fetchAllTickets();
+      fetchStats();
+    } else {
+      fetchMyTickets();
+      fetchMyTicketStats();
+    }
   }, []);
+
+  const fetchAllTickets = async () => {
+    try {
+      const response = await axios.get(`${BaseUrl}/tickets`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      setTickets(response.data);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching all tickets:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Failed to load tickets',
+      });
+      setLoading(false);
+    }
+  };
+
+  const fetchMyTickets = async () => {
+    try {
+      const userData = JSON.parse(localStorage.getItem('userData'));
+      if (!userData || !userData._id) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'User data not found. Please login again.',
+        });
+        return;
+      }
+
+      const response = await axios.get(`${BaseUrl}/tickets/my-tickets/${userData._id}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+
+      setTickets(response.data.tickets);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching tickets:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Failed to load tickets',
+      });
+      setLoading(false);
+    }
+  };
+
+  const fetchStats = async () => {
+    try {
+      const response = await axios.get(`${BaseUrl}/tickets/stats`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      setStats(response.data);
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Failed to load statistics',
+      });
+    }
+  };
+
+  const fetchSupportEmployees = async () => {
+    try {
+      const response = await axios.get(`${BaseUrl}/employees/support`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      setSupportEmployees(response.data);
+    } catch (error) {
+      console.error('Error fetching support employees:', error);
+      toast.error('Failed to load support employees');
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (!userData || !userData._id) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'User data not found. Please login again.',
+      });
+      setLoading(false);
+      return;
+    }
+
+    const formDataToSend = new FormData();
+    formDataToSend.append('title', formData.title);
+    formDataToSend.append('description', formData.description);
+    formDataToSend.append('createdBy', userData._id);
+    if (selectedImage) {
+      formDataToSend.append('image', selectedImage);
+    }
+
     try {
-      await axios.post(`${BaseUrl}/tickets`, formData, {
+      const response = await axios.post(`${BaseUrl}/tickets`, formDataToSend, {
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
         }
       });
-      toast.success('Ticket created successfully!');
-      handleCloseDialog();
-      fetchTickets();
+
+      if (response.status === 201 || response.status === 200) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Success!',
+          text: `Ticket ${response.data.ticketNumber} created successfully!`,
+        });
+        handleCloseDialog();
+        if (userData?.isAdmin) {
+          fetchAllTickets();
+          fetchStats();
+        } else {
+          fetchMyTickets();
+          fetchMyTicketStats();
+        }
+      }
     } catch (error) {
       console.error('Error creating ticket:', error);
-      toast.error(error.response?.data?.message || 'Failed to create ticket');
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: error.response?.data?.message || 'Failed to create ticket',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedImage(file);
+      // Create preview URL
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
   const handleCloseDialog = () => {
     setOpenDialog(false);
-    setFormData({ title: '', description: '' });
+    setFormData({ title: '', description: '', image: null });
+    setSelectedImage(null);
+    setImagePreview(null);
+    // toast.info('Dialog closed');
   };
 
-  const getStatusChipProps = (status) => {
-    const props = {
-      Open: { color: 'primary', icon: <AccessTime /> },
-      Breached: { color: 'error', icon: <ErrorOutline /> },
-      Resolved: { color: 'success', icon: <CheckCircleOutline /> },
-      Pending: { color: 'warning', icon: <WarningAmber /> },
-    };
-    return props[status] || props.Open;
+  const validateToken = () => {
+    const currentToken = localStorage.getItem('token');
+    const userData = JSON.parse(localStorage.getItem('userData'));
+
+    if (!currentToken) {
+      toast.error('No authentication token found. Please login again.');
+      return false;
+    }
+
+    if (!userData || !userData._id) {
+      toast.error('User data not found. Please login again.');
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleCreateTicket = (e) => {
+    if (!validateToken()) {
+      return;
+    }
+    handleSubmit(e);
+  };
+
+  const handleEditClick = async (ticketId) => {
+    try {
+      const response = await axios.get(`${BaseUrl}/tickets/${ticketId}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      setSelectedTicket(response.data);
+
+      // Set initial form data
+      setEditFormData({
+        title: response.data.title,
+        description: response.data.description,
+        image: response.data.image // Store the image filename
+      });
+
+      // Set image preview if ticket has an image
+      if (response.data.image) {
+        // Construct the full image URL
+        const imageUrl = `${BaseUrl}/uploads/${response.data.image}`;
+        console.log('Setting image preview URL:', imageUrl); // Debug log
+        setImagePreview(imageUrl);
+      } else {
+        setImagePreview(null);
+      }
+
+      setEditDialogOpen(true);
+    } catch (error) {
+      console.error('Error fetching ticket details:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Failed to load ticket details',
+      });
+    }
+  };
+
+  const handleEditImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Update form data with the new file
+      setEditFormData(prev => ({
+        ...prev,
+        image: file
+      }));
+
+      // Create preview URL for new image
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleCloseEditDialog = () => {
+    setEditDialogOpen(false);
+    setEditFormData({
+      title: '',
+      description: '',
+      image: null
+    });
+    setImagePreview(null);
+    setSelectedTicket(null);
+  };
+
+  const handleForwardClick = async (ticketId) => {
+    await fetchSupportEmployees();
+    setSelectedTicket(ticketId);
+    setForwardDialogOpen(true);
+    // toast.info('Forward dialog opened');
+  };
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    const formDataToSend = new FormData();
+    formDataToSend.append('title', editFormData.title);
+    formDataToSend.append('description', editFormData.description);
+
+    // Handle image upload
+    if (editFormData.image instanceof File) {
+      // If it's a new file, append it
+      formDataToSend.append('image', editFormData.image);
+    } else if (editFormData.image && typeof editFormData.image === 'string') {
+      // If it's the existing image filename, append it
+      formDataToSend.append('existingImage', editFormData.image);
+    }
+
+    try {
+      const response = await axios.put(`${BaseUrl}/tickets/${selectedTicket._id}`, formDataToSend, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Success!',
+        text: 'Ticket updated successfully!',
+      });
+      handleCloseEditDialog();
+      const userData = JSON.parse(localStorage.getItem('userData'));
+      if (userData?.isAdmin) {
+        fetchAllTickets();
+        fetchStats();
+      } else {
+        fetchMyTickets();
+        fetchMyTicketStats();
+      }
+    } catch (error) {
+      console.error('Error updating ticket:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: error.response?.data?.message || 'Failed to update ticket',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDelete = async (ticketId) => {
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!'
+    });
+
+    if (result.isConfirmed) {
+      try {
+        const response = await axios.delete(`${BaseUrl}/tickets/${ticketId}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        Swal.fire({
+          icon: 'success',
+          title: 'Deleted!',
+          text: 'Ticket has been deleted.',
+        });
+        const userData = JSON.parse(localStorage.getItem('userData'));
+        if (userData?.isAdmin) {
+          fetchAllTickets();
+          fetchStats();
+        } else {
+          fetchMyTickets();
+          fetchMyTicketStats();
+        }
+      } catch (error) {
+        console.error('Error deleting ticket:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: error.response?.data?.message || 'Failed to delete ticket',
+        });
+      }
+    }
+  };
+
+  const handleForwardSubmit = async () => {
+    if (!selectedEmployee) {
+      toast.error('Please select an employee');
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        `${BaseUrl}/tickets/forward/${selectedTicket}`,
+        { forwardedTo: selectedEmployee },
+        { headers: { 'Authorization': `Bearer ${token}` } }
+      );
+
+      toast.success('Ticket forwarded successfully!');
+      setForwardDialogOpen(false);
+      setSelectedEmployee('');
+      fetchTickets();
+    } catch (error) {
+      console.error('Error forwarding ticket:', error);
+      toast.error(error.response?.data?.message || 'Failed to forward ticket');
+    }
+  };
+
+  const handleStatusClick = async (ticket) => {
+    try {
+      setSelectedStatusTicket(ticket);
+      setSelectedStatus(ticket.status);
+      setStatusDialogOpen(true);
+    } catch (error) {
+      console.error('Error opening status dialog:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Failed to open status update dialog',
+      });
+    }
+  };
+
+  const handleStatusUpdate = async () => {
+    if (!selectedStatus || !selectedStatusTicket) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Please select a status',
+      });
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      const response = await axios.patch(
+        `${BaseUrl}/tickets/${selectedStatusTicket._id}/status`,
+        { status: selectedStatus },
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      if (response.data.message === "Ticket status updated successfully") {
+        Swal.fire({
+          icon: 'success',
+          title: 'Success!',
+          text: 'Ticket status updated successfully!',
+        });
+        setStatusDialogOpen(false);
+        setSelectedStatus('');
+        setSelectedStatusTicket(null);
+
+        // Update the tickets list based on user role
+        const userData = JSON.parse(localStorage.getItem('userData'));
+        if (userData?.isAdmin || userData?.role === 'Support') {
+          fetchAllTickets();
+          fetchStats();
+        } else {
+          fetchMyTickets();
+          fetchMyTicketStats();
+        }
+      }
+    } catch (error) {
+      console.error('Error updating ticket status:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: error.response?.data?.message || 'Failed to update ticket status',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleViewClick = async (ticketId) => {
+    try {
+      const response = await axios.get(`${BaseUrl}/tickets/${ticketId}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      setSelectedTicketDetails(response.data);
+      setViewDialogOpen(true);
+    } catch (error) {
+      console.error('Error fetching ticket details:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Failed to load ticket details',
+      });
+    }
+  };
+
+  const handleCloseViewDialog = () => {
+    setViewDialogOpen(false);
+    setSelectedTicketDetails(null);
   };
 
   const filteredTickets = tickets.filter(ticket =>
@@ -279,111 +675,8 @@ const TicketsPage = () => {
     ticket.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleUpdateTicketStatus = async (ticket, currentStatus) => {
-    // Show confirmation dialog using SweetAlert2
-    const result = await Swal.fire({
-      title: `${currentStatus === 'Open' ? 'Resolve' : 'Reopen'} Ticket?`,
-      html: `Are you sure you want to ${currentStatus === 'Open' ? 'resolve' : 'reopen'} this ticket?`,
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonColor: currentStatus === 'Open' ? '#22c55e' : '#3b82f6',
-      cancelButtonColor: '#ef4444',
-      confirmButtonText: currentStatus === 'Open' ? 'Yes, Resolve it!' : 'Yes, Reopen it!',
-      cancelButtonText: 'Cancel',
-      background: 'rgba(255, 255, 255, 0.9)',
-      backdrop: 'rgba(0, 0, 0, 0.4)',
-      showClass: {
-        popup: 'animate__animated animate__fadeInDown'
-      },
-      hideClass: {
-        popup: 'animate__animated animate__fadeOutUp'
-      }
-    });
-
-    if (result.isConfirmed) {
-      try {
-        const newStatus = currentStatus === 'Open' ? 'Resolved' : 'Open';
-
-        // Prepare update data with all required fields
-        const updateData = {
-          title: ticket.title,
-          description: ticket.description,
-          status: newStatus
-        };
-
-        console.log('Updating ticket with data:', updateData);
-
-        const response = await axios.put(
-          `${BaseUrl}/tickets/${ticket._id}`,
-          updateData,
-          {
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            }
-          }
-        );
-
-        if (response.data) {
-          Swal.fire({
-            title: 'Success!',
-            text: `Ticket ${newStatus === 'Resolved' ? 'resolved' : 'reopened'} successfully`,
-            icon: 'success',
-            timer: 2000,
-            showConfirmButton: false
-          });
-          fetchTickets();
-        }
-      } catch (error) {
-        console.error('Error updating ticket status:', error);
-        Swal.fire({
-          title: 'Error!',
-          text: error.response?.data?.message || 'Failed to update ticket status',
-          icon: 'error'
-        });
-      }
-    }
-  };
-
-  // Metrics with icons and descriptions
-  const metricConfigs = [
-    {
-      title: 'Total Tickets',
-      value: metrics.total,
-      color: '#3b82f6',
-      icon: <Timeline sx={{ fontSize: 32 }} />,
-      description: 'All tickets in the system',
-      trend: '+12% from last month'
-    },
-    {
-      title: 'Open Tickets',
-      value: metrics.open,
-      color: '#0ea5e9',
-      icon: <AccessTime sx={{ fontSize: 32 }} />,
-      description: 'Awaiting resolution',
-      trend: 'Active cases'
-    },
-    {
-      title: 'Breached SLA',
-      value: metrics.breached,
-      color: '#ef4444',
-      icon: <PriorityHigh sx={{ fontSize: 32 }} />,
-      description: 'Past due date',
-      trend: 'Needs attention'
-    },
-    {
-      title: 'Resolved',
-      value: metrics.resolved,
-      color: '#22c55e',
-      icon: <CheckCircleOutline sx={{ fontSize: 32 }} />,
-      description: 'Successfully completed',
-      trend: '95% resolution rate'
-    }
-  ];
-
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
-      {/* Enhanced Header Section */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -432,85 +725,56 @@ const TicketsPage = () => {
               zIndex: 0
             }}
           />
-          <Box sx={{ position: 'relative', zIndex: 1 }}>
-            <Typography variant="h4" fontWeight="bold" gutterBottom>
 
-              Support Tickets Dashboard
-            </Typography>
-            <Typography variant="body1" sx={{ opacity: 0.9, mb: 2, maxWidth: '800px' }}>
-
-              Track and manage support requests efficiently
-            </Typography>
-          </Box>
+          <Typography variant="h4" fontWeight="bold" gutterBottom>
+            Support Tickets Dashboard
+          </Typography>
+          <Typography variant="body1" sx={{ opacity: 0.9 }}>
+            Track and manage support requests efficiently
+          </Typography>
         </Box>
       </motion.div>
 
-      {/* Enhanced Metrics Section */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
         {metricConfigs.map((metric, index) => (
-          <Grid item xs={12} sm={6} md={3} key={index}>
-            <motion.div
+          <Grid item xs={12} sm={6} md={3} key={index} >
+            <MetricCard
+              color={metric.color}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
-              <MetricCard color={metric.color}>
-                <div className="metric-shine" />
-                <div className="metric-glow" />
-                <CardContent sx={{ height: '100%', p: 3, position: 'relative', zIndex: 1 }}>
-                  <MetricIconWrapper color={metric.color} className="metric-icon">
-                    {React.cloneElement(metric.icon, { sx: { color: metric.color } })}
-                  </MetricIconWrapper>
-                  <Typography
-                    variant="h6"
-                    sx={{
-                      color: alpha(metric.color, 0.9),
-                      fontWeight: 600,
-                      mb: 1
-                    }}
-                  >
-                    {metric.title}
-                  </Typography>
-                  <Typography
-                    variant="h3"
-                    sx={{
-                      fontWeight: 700,
-                      color: metric.color,
-                      mb: 1
-                    }}
-                  >
-                    {metric.value}
-                  </Typography>
-                  <Box sx={{ mt: 2 }}>
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        color: alpha(metric.color, 0.7),
-                        fontWeight: 500,
-                        mb: 0.5
-                      }}
-                    >
-                      {metric.description}
-                    </Typography>
-                    <Typography
-                      variant="caption"
-                      sx={{
-                        color: alpha(metric.color, 0.6),
-                        fontWeight: 500,
-                        display: 'block'
-                      }}
-                    >
-                      {metric.trend}
-                    </Typography>
-                  </Box>
-                </CardContent>
-              </MetricCard>
-            </motion.div>
+              <Box sx={{ position: 'relative', zIndex: 1, width: '100%' }}>
+                <Box sx={{
+                  width: 56,
+                  height: 56,
+                  borderRadius: 2,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: `linear-gradient(135deg, ${alpha(metric.color, 0.2)} 0%, ${alpha(metric.color, 0.1)} 100%)`,
+                  mb: 2
+                }}>
+                  {React.cloneElement(metric.icon, { sx: { fontSize: 28, color: metric.color } })}
+                </Box>
+
+                <Typography variant="h3" sx={{ fontWeight: 700, color: metric.color, mb: 1 }}>
+                  {metric.value}
+                </Typography>
+
+                <Typography variant="h6" sx={{ color: alpha(metric.color, 0.9), fontWeight: 600, mb: 1 }}>
+                  {metric.title}
+                </Typography>
+
+                <Typography variant="body2" sx={{ color: alpha(metric.color, 0.7) }}>
+                  {metric.description}
+                </Typography>
+              </Box>
+            </MetricCard>
           </Grid>
         ))}
       </Grid>
 
-      {/* Actions Section */}
       <Box sx={{ display: 'flex', gap: 2, mb: 4 }}>
         <TextField
           fullWidth
@@ -520,7 +784,7 @@ const TicketsPage = () => {
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <Search color="action" />
+                <Search />
               </InputAdornment>
             ),
           }}
@@ -537,104 +801,125 @@ const TicketsPage = () => {
           onClick={() => setOpenDialog(true)}
           sx={{
             borderRadius: '12px',
-            background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-            padding: '12px 24px',
             textTransform: 'none',
-            fontSize: '1rem',
-            fontWeight: 600,
-            boxShadow: '0 4px 15px rgba(37, 99, 235, 0.2)',
-            '&:hover': {
-              background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
-              transform: 'translateY(-2px)',
-              boxShadow: '0 8px 25px rgba(37, 99, 235, 0.3)',
-            }
+            px: 3
           }}
         >
-          Raise Ticket
+          New Ticket
         </Button>
       </Box>
 
-      {/* Enhanced Table Section */}
       <StyledTableContainer component={Paper}>
         <Table>
           <TableHead>
             <TableRow>
+              <TableCell>Ticket Number</TableCell>
               <TableCell>Title</TableCell>
-              <TableCell>Description</TableCell>
+              {(userData?.isAdmin || userData?.role === 'Support') && <TableCell>Created By</TableCell>}
+              <TableCell>Assigned To</TableCell>
               <TableCell>Status</TableCell>
-              <TableCell>Raised By</TableCell>
               <TableCell>Created At</TableCell>
-              <TableCell>Resolved At</TableCell>
               <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredTickets.map((ticket) => (
-              <TableRow key={ticket._id} hover>
-                <TableCell>{ticket.title}</TableCell>
-                <TableCell>
-                  <Tooltip
-                    title={ticket.description}
-                    TransitionComponent={Zoom}
-                    placement="top-start"
-                  >
-                    <Typography
-                      sx={{
-                        maxWidth: '200px',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap'
-                      }}
-                    >
-                      {ticket.description}
-                    </Typography>
-                  </Tooltip>
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={userData?.isAdmin ? 7 : 6} align="center">
+                  <CircularProgress />
                 </TableCell>
+              </TableRow>
+            ) : filteredTickets.map((ticket) => (
+              <TableRow key={ticket._id}>
+                <TableCell>{ticket.ticketNumber}</TableCell>
+                <TableCell>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    {ticket.image && (
+                      <Avatar
+                        src={`${BaseUrl}/uploads/${ticket.image}`}
+                        variant="rounded"
+                        sx={{ width: 32, height: 32 }}
+                      />
+                    )}
+                    {ticket.title}
+                  </Box>
+                </TableCell>
+                {(userData?.isAdmin || userData?.role === 'Support') && (
+                  <TableCell>
+                    {ticket.createdBy?.name || 'N/A'}
+                  </TableCell>
+                )}
+                <TableCell>{ticket.assignedTo?.name || 'N/A'}</TableCell>
                 <TableCell>
                   <Chip
-                    label={ticket.status}
+                    label={ticket.status || 'Open'}
+                    color={
+                      ticket.status === 'Open' ? 'primary' :
+                        ticket.status === 'Resolved' ? 'success' :
+                          'error'
+                    }
                     size="small"
-                    icon={getStatusChipProps(ticket.status).icon}
-                    color={getStatusChipProps(ticket.status).color}
-                    sx={{
-                      fontWeight: 600,
-                      borderRadius: '8px',
-                      '& .MuiChip-icon': {
-                        color: 'inherit'
-                      }
-                    }}
                   />
                 </TableCell>
                 <TableCell>
-                  <Tooltip
-                    title={`Employee ID: ${ticket.raisedBy.employeeId}`}
-                    TransitionComponent={Zoom}
-                  >
-                    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                      <Typography variant="body2" fontWeight={600}>
-                        {ticket.raisedBy.name}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        {ticket.raisedBy.email}
-                      </Typography>
-                    </Box>
-                  </Tooltip>
+                  {ticket.createdAt ? new Date(ticket.createdAt).toLocaleDateString() : 'N/A'}
                 </TableCell>
                 <TableCell>
-                  {new Date(ticket.createdAt).toLocaleString()}
-                </TableCell>
-                <TableCell>
-                  {ticket.resolvedAt ? new Date(ticket.resolvedAt).toLocaleString() : '-'}
-                </TableCell>
-                <TableCell>
-                  <StatusButton
-                    variant="outlined"
-                    status={ticket.status}
-                    onClick={() => handleUpdateTicketStatus(ticket, ticket.status)}
-                    startIcon={ticket.status === 'Open' ? <CheckCircleOutline /> : <Refresh />}
-                  >
-                    {ticket.status === 'Open' ? 'Mark Resolved' : 'Reopen'}
-                  </StatusButton>
+                  <Box sx={{ display: 'flex', gap: 1 }}>
+                    {userData?.isAdmin ? (
+                      <Tooltip title="Forward Ticket">
+                        <IconButton
+                          onClick={() => handleForwardClick(ticket._id)}
+                          size="small"
+                          color="primary"
+                        >
+                          <ForwardIcon />
+                        </IconButton>
+                      </Tooltip>
+                    ) : userData?.role === 'Support' ? (
+                      <>
+                        <Tooltip title="View Details">
+                          <IconButton
+                            onClick={() => handleViewClick(ticket._id)}
+                            size="small"
+                            color="primary"
+                          >
+                            <VisibilityIcon />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Update Status">
+                          <IconButton
+                            onClick={() => handleStatusClick(ticket)}
+                            size="small"
+                            color="primary"
+                          >
+                            <UpdateIcon />
+                          </IconButton>
+                        </Tooltip>
+                      </>
+                    ) : (
+                      <>
+                        <Tooltip title="Edit">
+                          <IconButton
+                            onClick={() => handleEditClick(ticket._id)}
+                            size="small"
+                            color="primary"
+                          >
+                            <EditIcon />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Delete">
+                          <IconButton
+                            onClick={() => handleDelete(ticket._id)}
+                            size="small"
+                            color="error"
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        </Tooltip>
+                      </>
+                    )}
+                  </Box>
                 </TableCell>
               </TableRow>
             ))}
@@ -642,46 +927,43 @@ const TicketsPage = () => {
         </Table>
       </StyledTableContainer>
 
-      {/* Create Ticket Dialog */}
-      <StyledDialog
+      <Dialog
         open={openDialog}
         onClose={handleCloseDialog}
         maxWidth="sm"
         fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: '24px',
+            background: 'rgba(255, 255, 255, 0.95)',
+            backdropFilter: 'blur(10px)',
+          }
+        }}
       >
-        <DialogTitle>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Add color="primary" />
-            <Typography>Raise New Ticket</Typography>
-            <IconButton
-              onClick={handleCloseDialog}
-              sx={{
-                position: 'absolute',
-                right: 8,
-                top: 8,
-                color: 'text.secondary'
-              }}
-            >
+        <DialogTitle sx={{ pb: 1 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Typography variant="h5" fontWeight="bold">Create New Ticket</Typography>
+            <IconButton onClick={handleCloseDialog} size="small">
               <Close />
             </IconButton>
           </Box>
         </DialogTitle>
-        <DialogContent dividers>
-          <Box component="form" sx={{ mt: 2 }} onSubmit={handleSubmit}>
+        <DialogContent>
+          <Box component="form" onSubmit={handleCreateTicket} sx={{ mt: 2 }}>
             <TextField
               fullWidth
               label="Title"
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
               required
+              sx={{ mb: 3 }}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <TitleIcon color="action" />
+                    <TitleIcon />
                   </InputAdornment>
                 ),
               }}
-              sx={{ mb: 3 }}
             />
             <TextField
               fullWidth
@@ -691,45 +973,637 @@ const TicketsPage = () => {
               required
               multiline
               rows={4}
+              sx={{ mb: 3 }}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <DescriptionIcon color="action" />
+                    <DescriptionIcon />
                   </InputAdornment>
                 ),
               }}
             />
+            <Box
+              component="label"
+              sx={{
+                mb: 3,
+                width: '100%',
+                height: '200px',
+                borderRadius: '12px',
+                border: '2px dashed',
+                borderColor: 'primary.main',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                position: 'relative',
+                overflow: 'hidden',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  borderColor: 'primary.dark',
+                  backgroundColor: 'rgba(0, 0, 0, 0.02)',
+                }
+              }}
+            >
+              {imagePreview ? (
+                <>
+                  <Box
+                    component="img"
+                    src={imagePreview}
+                    alt="Preview"
+                    sx={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      opacity: 0.7,
+                    }}
+                  />
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      width: '100%',
+                      height: '100%',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                      color: 'white',
+                      zIndex: 1,
+                    }}
+                  >
+                    <UploadIcon sx={{ fontSize: 40, mb: 1 }} />
+                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                      Change Image
+                    </Typography>
+                    <Typography variant="caption" sx={{ mt: 1 }}>
+                      Click to select a different image
+                    </Typography>
+                  </Box>
+                </>
+              ) : (
+                <>
+                  <UploadIcon sx={{ fontSize: 40, color: 'primary.main', mb: 1 }} />
+                  <Typography variant="body1" sx={{ fontWeight: 500, color: 'primary.main' }}>
+                    Upload Image
+                  </Typography>
+                  <Typography variant="caption" sx={{ mt: 1, color: 'text.secondary' }}>
+                    Click to select an image
+                  </Typography>
+                </>
+              )}
+              <input
+                type="file"
+                hidden
+                accept="image/*"
+                onChange={handleImageChange}
+              />
+            </Box>
+            {selectedImage && (
+              <Box sx={{ mb: 3, width: '100%', textAlign: 'center' }}>
+                <Typography variant="body2" sx={{ mb: 2 }}>
+                  Selected file: {selectedImage.name}
+                </Typography>
+              </Box>
+            )}
           </Box>
         </DialogContent>
         <DialogActions sx={{ p: 3 }}>
           <Button
             onClick={handleCloseDialog}
             variant="outlined"
-            sx={{
-              borderRadius: '8px',
-              textTransform: 'none',
-              px: 3
-            }}
+            sx={{ borderRadius: '12px', textTransform: 'none' }}
+            disabled={loading}
           >
             Cancel
           </Button>
           <Button
-            onClick={handleSubmit}
+            onClick={handleCreateTicket}
             variant="contained"
-            sx={{
-              borderRadius: '8px',
-              background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-              textTransform: 'none',
-              px: 3,
-              '&:hover': {
-                background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
-              }
-            }}
+            sx={{ borderRadius: '12px', textTransform: 'none' }}
+            disabled={loading || !formData.title || !formData.description}
           >
-            Submit Ticket
+            {loading ? (
+              <CircularProgress size={24} color="inherit" />
+            ) : (
+              'Create Ticket'
+            )}
           </Button>
         </DialogActions>
-      </StyledDialog>
+      </Dialog>
+
+      <Dialog
+        open={editDialogOpen}
+        onClose={handleCloseEditDialog}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Typography variant="h6">Edit Ticket</Typography>
+            <IconButton onClick={handleCloseEditDialog}>
+              <Close />
+            </IconButton>
+          </Box>
+        </DialogTitle>
+        <DialogContent>
+          <Box component="form" sx={{ mt: 2 }}>
+            <TextField
+              fullWidth
+              label="Title"
+              value={editFormData.title}
+              onChange={(e) => setEditFormData({ ...editFormData, title: e.target.value })}
+              required
+              sx={{ mb: 3 }}
+            />
+            <TextField
+              fullWidth
+              label="Description"
+              value={editFormData.description}
+              onChange={(e) => setEditFormData({ ...editFormData, description: e.target.value })}
+              required
+              multiline
+              rows={4}
+              sx={{ mb: 3 }}
+            />
+            <Box
+              component="label"
+              sx={{
+                mb: 3,
+                width: '100%',
+                height: '200px',
+                borderRadius: '12px',
+                border: '2px dashed',
+                borderColor: 'primary.main',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                position: 'relative',
+                overflow: 'hidden',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  borderColor: 'primary.dark',
+                  backgroundColor: 'rgba(0, 0, 0, 0.02)',
+                }
+              }}
+            >
+              {imagePreview ? (
+                <>
+                  <Box
+                    component="img"
+                    src={imagePreview}
+                    alt="Preview"
+                    sx={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      opacity: 0.7,
+                    }}
+                  />
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      width: '100%',
+                      height: '100%',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                      color: 'white',
+                      zIndex: 1,
+                    }}
+                  >
+                    <UploadIcon sx={{ fontSize: 40, mb: 1 }} />
+                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                      Change Image
+                    </Typography>
+                    <Typography variant="caption" sx={{ mt: 1 }}>
+                      Click to select a different image
+                    </Typography>
+                  </Box>
+                </>
+              ) : (
+                <>
+                  <UploadIcon sx={{ fontSize: 40, color: 'primary.main', mb: 1 }} />
+                  <Typography variant="body1" sx={{ fontWeight: 500, color: 'primary.main' }}>
+                    Upload Image
+                  </Typography>
+                  <Typography variant="caption" sx={{ mt: 1, color: 'text.secondary' }}>
+                    Click to select an image
+                  </Typography>
+                </>
+              )}
+              <input
+                type="file"
+                hidden
+                accept="image/*"
+                onChange={handleEditImageChange}
+              />
+            </Box>
+            {editFormData.image && (
+              <Box sx={{ mb: 3, width: '100%', textAlign: 'center' }}>
+                <Typography variant="body2" sx={{ mb: 2 }}>
+                  Selected file: {editFormData.image.name}
+                </Typography>
+              </Box>
+            )}
+          </Box>
+        </DialogContent>
+        <DialogActions sx={{ p: 3 }}>
+          <Button
+            onClick={handleCloseEditDialog}
+            variant="outlined"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleEditSubmit}
+            variant="contained"
+            disabled={isLoading}
+          >
+            {isLoading ? <CircularProgress size={24} /> : 'Save Changes'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={forwardDialogOpen}
+        onClose={() => setForwardDialogOpen(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Typography variant="h6">Forward Ticket</Typography>
+            <IconButton onClick={() => setForwardDialogOpen(false)}>
+              <Close />
+            </IconButton>
+          </Box>
+        </DialogTitle>
+        <DialogContent>
+          <FormControl fullWidth sx={{ mt: 2 }}>
+            <InputLabel>Select Support Employee</InputLabel>
+            <Select
+              value={selectedEmployee}
+              onChange={(e) => setSelectedEmployee(e.target.value)}
+              label="Select Support Employee"
+            >
+              {supportEmployees.map((employee) => (
+                <MenuItem key={employee._id} value={employee._id}>
+                  {employee.name} ({employee.employeeId})
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </DialogContent>
+        <DialogActions sx={{ p: 3 }}>
+          <Button
+            onClick={() => setForwardDialogOpen(false)}
+            variant="outlined"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleForwardSubmit}
+            variant="contained"
+            disabled={!selectedEmployee || isLoading}
+          >
+            {isLoading ? <CircularProgress size={24} /> : 'Forward Ticket'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={statusDialogOpen}
+        onClose={() => setStatusDialogOpen(false)}
+        maxWidth="xs"
+        fullWidth
+      >
+        <DialogTitle>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Typography variant="h6">Update Ticket Status</Typography>
+            <IconButton onClick={() => setStatusDialogOpen(false)}>
+              <Close />
+            </IconButton>
+          </Box>
+        </DialogTitle>
+        <DialogContent>
+          <FormControl fullWidth sx={{ mt: 2 }}>
+            <InputLabel>Status</InputLabel>
+            <Select
+              value={selectedStatus}
+              onChange={(e) => setSelectedStatus(e.target.value)}
+              label="Status"
+            >
+              <MenuItem value="Open">Open</MenuItem>
+              <MenuItem value="Resolved">Resolved</MenuItem>
+              {/* <MenuItem value="Breached">Breached</MenuItem> */}
+            </Select>
+          </FormControl>
+        </DialogContent>
+        <DialogActions sx={{ p: 3 }}>
+          <Button
+            onClick={() => setStatusDialogOpen(false)}
+            variant="outlined"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleStatusUpdate}
+            variant="contained"
+            disabled={!selectedStatus || isLoading}
+            color="primary"
+          >
+            {isLoading ? <CircularProgress size={24} /> : 'Update Status'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={viewDialogOpen}
+        onClose={handleCloseViewDialog}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: '24px',
+            background: 'rgba(255, 255, 255, 0.95)',
+            backdropFilter: 'blur(10px)',
+          }
+        }}
+      >
+        <DialogTitle>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Typography variant="h5" fontWeight="bold">Ticket Details</Typography>
+            <IconButton onClick={handleCloseViewDialog}>
+              <Close />
+            </IconButton>
+          </Box>
+        </DialogTitle>
+        <DialogContent>
+          {selectedTicketDetails && (
+            <Box sx={{ mt: 2 }}>
+              <Grid container spacing={3}>
+                {/* <Grid item xs={12}>
+                  <Paper elevation={0} sx={{ p: 2, bgcolor: 'rgba(59, 130, 246, 0.05)', borderRadius: 2 }}>
+                    <Typography variant="h6" color="primary" gutterBottom>
+                      {selectedTicketDetails.title}
+                    </Typography>
+                    <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
+                      {selectedTicketDetails.description}
+                    </Typography>
+                  </Paper>
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                    Ticket Number
+                  </Typography>
+                  <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                    {selectedTicketDetails.ticketNumber}
+                  </Typography>
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                    Status
+                  </Typography>
+                  <Chip
+                    label={selectedTicketDetails.status}
+                    color={
+                      selectedTicketDetails.status === 'Open' ? 'primary' :
+                      selectedTicketDetails.status === 'Resolved' ? 'success' :
+                      'error'
+                    }
+                    size="small"
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                    Created By
+                  </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.main' }}>
+                      {selectedTicketDetails.createdBy.name.charAt(0)}
+                    </Avatar>
+                    <Box>
+                      <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                        {selectedTicketDetails.createdBy.name}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {selectedTicketDetails.createdBy.employeeId}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                    Assigned To
+                  </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Avatar sx={{ width: 32, height: 32, bgcolor: 'secondary.main' }}>
+                      {selectedTicketDetails.assignedTo.name.charAt(0)}
+                    </Avatar>
+                    <Box>
+                      <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                        {selectedTicketDetails.assignedTo.name}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {selectedTicketDetails.assignedTo.employeeId}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                    Created At
+                  </Typography>
+                  <Typography variant="body2">
+                    {new Date(selectedTicketDetails.createdAt).toLocaleString()}
+                  </Typography>
+                </Grid>
+
+                {selectedTicketDetails.resolvedAt && (
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                      Resolved At
+                    </Typography>
+                    <Typography variant="body2">
+                      {new Date(selectedTicketDetails.resolvedAt).toLocaleString()}
+                    </Typography>
+                  </Grid>
+                )}
+
+                {selectedTicketDetails.image && (
+                  <Grid item xs={12}>
+                    <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                      Attached Image
+                    </Typography>
+                    <Box
+                      component="img"
+                      src={`${BaseUrl}/uploads/${selectedTicketDetails.image}`}
+                      alt="Ticket attachment"
+                      sx={{
+                        width: '100%',
+                        maxHeight: 200,
+                        objectFit: 'contain',
+                        borderRadius: 2,
+                        border: '1px solid',
+                        borderColor: 'divider'
+                      }}
+                    />
+                  </Grid>
+                )} */}
+                <Grid className='flex  gap-8'  >
+                  <Grid item xs={12}>
+                    <Paper elevation={0} sx={{ p: 2, bgcolor: 'rgba(59, 130, 246, 0.05)', borderRadius: 2 }}>
+                      <Typography variant="h6" color="primary" gutterBottom>
+                        {selectedTicketDetails.title}
+                      </Typography>
+                      <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
+                        {selectedTicketDetails.description}
+                      </Typography>
+                    </Paper>
+                  </Grid>
+
+                  {selectedTicketDetails.image && (
+                    <Grid item xs={12}>
+                      <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                        Attached Image
+                      </Typography>
+                      <Box
+                        component="img"
+                        src={`${BaseUrl}/uploads/${selectedTicketDetails.image}`}
+                        alt="Ticket attachment"
+                        sx={{
+                          width: '100%',
+                          maxHeight: 200,
+                          objectFit: 'contain',
+                          borderRadius: 2,
+                          border: '1px solid',
+                          borderColor: 'divider'
+                        }}
+                      />
+                    </Grid>
+                  )}
+
+                </Grid>
+
+                <Grid className='flex  gap-15'  >
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                      Ticket Number
+                    </Typography>
+                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                      {selectedTicketDetails.ticketNumber}
+                    </Typography>
+                  </Grid>
+
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                      Status
+                    </Typography>
+                    <Chip
+                      label={selectedTicketDetails.status}
+                      color={
+                        selectedTicketDetails.status === 'Open' ? 'primary' :
+                          selectedTicketDetails.status === 'Resolved' ? 'success' :
+                            'error'
+                      }
+                      size="small"
+                    />
+                  </Grid>
+
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                      Created By
+                    </Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.main' }}>
+                        {selectedTicketDetails.createdBy.name.charAt(0)}
+                      </Avatar>
+                      <Box>
+                        <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                          {selectedTicketDetails.createdBy.name}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {selectedTicketDetails.createdBy.employeeId}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </Grid>
+                </Grid>
+
+                <Grid className='flex  gap-15'  >
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                      Assigned To
+                    </Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Avatar sx={{ width: 32, height: 32, bgcolor: 'secondary.main' }}>
+                        {selectedTicketDetails.assignedTo.name.charAt(0)}
+                      </Avatar>
+                      <Box>
+                        <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                          {selectedTicketDetails.assignedTo.name}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {selectedTicketDetails.assignedTo.employeeId}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </Grid>
+
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                      Created At
+                    </Typography>
+                    <Typography variant="body2">
+                      {new Date(selectedTicketDetails.createdAt).toLocaleString()}
+                    </Typography>
+                  </Grid>
+
+                  {selectedTicketDetails.resolvedAt && (
+                    <Grid item xs={12} sm={6}>
+                      <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                        Resolved At
+                      </Typography>
+                      <Typography variant="body2">
+                        {new Date(selectedTicketDetails.resolvedAt).toLocaleString()}
+                      </Typography>
+                    </Grid>
+                  )}
+                </Grid>
+              </Grid>
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions sx={{ p: 3 }}>
+          <Button
+            onClick={handleCloseViewDialog}
+            variant="outlined"
+            sx={{ borderRadius: '12px', textTransform: 'none' }}
+          >
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 };
