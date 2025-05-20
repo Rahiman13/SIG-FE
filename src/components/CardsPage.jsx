@@ -400,7 +400,7 @@ const ContentBlock = styled(Box)(({ theme, type }) => ({
 
 const formatDescription = (description) => {
   if (!description) return [{ type: 'paragraph', value: '' }];
-  
+
   try {
     if (typeof description === 'string') {
       const parsed = JSON.parse(description);
@@ -725,15 +725,15 @@ const CardsPage = () => {
 
         if (response.data) {
           const updatedCard = response.data.card || response.data;
-          
+
           // Use our complete update data for the UI update
           const mergedCard = {
             ...updatedCard,
             ...updateData // Ensure our update data takes precedence
           };
-          
+
           console.log('Final merged card data:', mergedCard);
-          
+
           setCards(prevCards =>
             prevCards.map(card =>
               card._id === selectedCardId ? mergedCard : card
@@ -765,7 +765,7 @@ const CardsPage = () => {
           toast.success('Card created successfully!');
         }
       }
-      
+
       // Refresh the cards list and counts
       await fetchCards();
       await fetchCardCounts();
@@ -836,12 +836,12 @@ const CardsPage = () => {
       });
 
       const card = response.data;
-      
+
       // Ensure description is properly formatted
       let description;
       try {
         // Try to parse if it's a string
-        description = typeof card.description === 'string' 
+        description = typeof card.description === 'string'
           ? JSON.parse(card.description)
           : Array.isArray(card.description)
             ? card.description
@@ -1067,28 +1067,31 @@ const CardsPage = () => {
               }}
             />
 
-            <Button
-              variant="contained"
-              onClick={handleOpenDialog}
-              startIcon={<Add />}
-              sx={{
-                borderRadius: '12px',
-                height: '56px',
-                background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-                transition: 'all 0.3s ease',
-                textTransform: 'none',
-                fontWeight: 600,
-                px: 4,
-                boxShadow: '0 4px 15px rgba(37, 99, 235, 0.2)',
-                '&:hover': {
-                  background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
-                  transform: 'translateY(-2px)',
-                  boxShadow: '0 8px 25px rgba(37, 99, 235, 0.3)',
-                }
-              }}
-            >
-              Add New Card
-            </Button>
+
+            {isAdmin && (
+              <Button
+                variant="contained"
+                onClick={handleOpenDialog}
+                startIcon={<Add />}
+                sx={{
+                  borderRadius: '12px',
+                  height: '56px',
+                  background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                  transition: 'all 0.3s ease',
+                  textTransform: 'none',
+                  fontWeight: 600,
+                  px: 4,
+                  boxShadow: '0 4px 15px rgba(37, 99, 235, 0.2)',
+                  '&:hover': {
+                    background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+                    transform: 'translateY(-2px)',
+                    boxShadow: '0 8px 25px rgba(37, 99, 235, 0.3)',
+                  }
+                }}
+              >
+                Add New Card
+              </Button>
+            )}
           </Box>
 
           {/* Filter Section Row */}

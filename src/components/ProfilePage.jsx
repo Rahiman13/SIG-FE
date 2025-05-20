@@ -45,7 +45,7 @@ const ProfilePage = () => {
     const [profileImage, setProfileImage] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
     const [fileInputRef] = useState(React.createRef());
-    const [showPreview, setShowPreview] = useState(false); // Add this line
+    const [showPreview, setShowPreview] = useState(false);
     const token = localStorage.getItem('token');
 
     const fetchProfile = async () => {
@@ -69,7 +69,7 @@ const ProfilePage = () => {
         fetchProfile();
     }, []);
 
-    
+
 
     const handleEdit = () => {
         setIsEditing(true);
@@ -112,6 +112,57 @@ const ProfilePage = () => {
             setShowPreview(true);
         } else if (fileInputRef.current) {
             fileInputRef.current.click();
+        }
+    };
+
+    const handleImageChange = async (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            // Create preview
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImagePreview(reader.result);
+            };
+            reader.readAsDataURL(file);
+            setProfileImage(file);
+
+            // Get user data from localStorage
+            const userData = JSON.parse(localStorage.getItem('userData'));
+            if (!userData || !userData._id) {
+                toast.error('User data not found');
+                return;
+            }
+
+            // Upload image
+            const formData = new FormData();
+            formData.append('image', file);
+            formData.append('_id', userData._id);
+
+            try {
+                const response = await axios.put(
+                    `${BaseUrl}/employees/profile-image`,
+                    formData,
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'multipart/form-data'
+                        }
+                    },
+                );
+                
+                if (response.data) {
+                    setProfile(response.data);
+                    // Update userData in localStorage with new profile image
+                    const updatedUserData = { ...userData, profileImage: response.data.profileImage };
+                    localStorage.setItem('userData', JSON.stringify(updatedUserData));
+                    toast.success('Profile image updated successfully!');
+                }
+            } catch (error) {
+                console.error('Error updating profile image:', error);
+                toast.error(error.response?.data?.message || 'Failed to update profile image');
+                // Reset preview on error
+                setImagePreview(null);
+            }
         }
     };
 
@@ -195,7 +246,7 @@ const ProfilePage = () => {
                                             borderRadius: '50%',
                                             zIndex: -1,
                                         }
-                                    }}  
+                                    }}
                                 >
                                     {!imagePreview && !profile?.profileImage && profile?.name?.charAt(0)}
                                 </Avatar>
@@ -336,10 +387,10 @@ const ProfilePage = () => {
                                             boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
                                         }}
                                     >
-                                        <Typography 
-                                            variant="h6" 
-                    
-                                            sx={{ 
+                                        <Typography
+                                            variant="h6"
+
+                                            sx={{
                                                 fontWeight: 700,
                                                 color: '#1f2937',
                                                 mb: 4,
@@ -357,9 +408,9 @@ const ProfilePage = () => {
                                             <PersonIcon sx={{ color: '#4f46e5', fontSize: 28 }} />
                                             Personal Information
                                         </Typography>
-                                        <Box sx={{ 
-                                            display: 'flex', 
-                                            flexDirection: 'column', 
+                                        <Box sx={{
+                                            display: 'flex',
+                                            flexDirection: 'column',
                                             gap: 3,
                                             '& .MuiTextField-root': {
                                                 transition: 'all 0.3s ease',
@@ -441,9 +492,9 @@ const ProfilePage = () => {
                                             boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
                                         }}
                                     >
-                                        <Typography 
-                                            variant="h6" 
-                                            sx={{ 
+                                        <Typography
+                                            variant="h6"
+                                            sx={{
                                                 fontWeight: 700,
                                                 color: '#1f2937',
                                                 mb: 4,
@@ -461,9 +512,9 @@ const ProfilePage = () => {
                                             <WorkIcon sx={{ color: '#4f46e5', fontSize: 28 }} />
                                             Work Information
                                         </Typography>
-                                        <Box sx={{ 
-                                            display: 'flex', 
-                                            flexDirection: 'column', 
+                                        <Box sx={{
+                                            display: 'flex',
+                                            flexDirection: 'column',
                                             gap: 3,
                                             '& .MuiFormControl-root': {
                                                 transition: 'all 0.3s ease',
@@ -577,16 +628,16 @@ class ProfileErrorBoundary extends React.Component {
     render() {
         if (this.state.hasError) {
             return (
-                <Box sx={{ 
-                    p: 3, 
+                <Box sx={{
+                    p: 3,
                     textAlign: 'center',
                     color: 'error.main'
                 }}>
                     <Typography variant="h6">
                         Something went wrong loading the profile.
                     </Typography>
-                    <Button 
-                        variant="contained" 
+                    <Button
+                        variant="contained"
                         onClick={() => window.location.reload()}
                         sx={{ mt: 2 }}
                     >
@@ -609,38 +660,3 @@ export default function ProfilePageWithErrorBoundary() {
     );
 }
 
-const handleImageChange = async (event) => {
-    const file = event.target.files[0];
-    if (file) {
-        try {
-            const formData = new FormData();
-            formData.append('image', file);
-            formData.append('_id', profile._id);
-
-            const response = await axios.put(
-                `${BaseUrl}/employees/profile-image`,
-                formData,
-                {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'multipart/form-data'
-                    }
-                }
-            );
-
-            if (response.data && response.data.profileImage) {
-                setProfile(prev => ({
-                    ...prev,
-                    profileImage: response.data.profileImage
-                }));
-                setImagePreview(response.data.profileImage);
-                toast.success('Profile image updated successfully!');
-            } else {
-                throw new Error('Invalid response format');
-            }
-        } catch (error) {
-            console.error('Error updating profile image:', error);
-            toast.error('Failed to update profile image. Please try again.');
-        }
-    }
-};

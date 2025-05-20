@@ -266,16 +266,16 @@ const EmployeesPage = () => {
                 };
 
                 console.log("Sending edit request with data:", editData);
-                
+
                 try {
                     const response = await axios.put(
                         `${BaseUrl}/employees/profile/${selectedEmployee._id}`,
                         editData,
-                        { 
-                            headers: { 
+                        {
+                            headers: {
                                 'Authorization': `Bearer ${token}`,
                                 'Content-Type': 'application/json'
-                            } 
+                            }
                         }
                     );
 
@@ -283,9 +283,9 @@ const EmployeesPage = () => {
 
                     if (response && (response.status === 200 || response.status === 201)) {
                         const updatedEmployee = response.data || editData;
-                        
-                        setEmployees(prevEmployees => 
-                            prevEmployees.map(emp => 
+
+                        setEmployees(prevEmployees =>
+                            prevEmployees.map(emp =>
                                 emp._id === selectedEmployee._id ? updatedEmployee : emp
                             )
                         );
@@ -293,7 +293,7 @@ const EmployeesPage = () => {
                         handleCloseDialog();
                         return;
                     }
-                    
+
                     console.error('Invalid response structure:', response);
                     throw new Error('Failed to update employee');
                 } catch (error) {
@@ -317,10 +317,10 @@ const EmployeesPage = () => {
                 };
 
                 console.log("Sending registration request with data:", registerData);
-                
+
                 try {
                     const response = await axios.post(
-                        `${BaseUrl}/auth/register`, 
+                        `${BaseUrl}/auth/register`,
                         registerData,
                         { headers: { 'Authorization': `Bearer ${token}` } }
                     );
@@ -336,7 +336,7 @@ const EmployeesPage = () => {
                         }
                         throw new Error('Server response missing employee data');
                     }
-                    
+
                     throw new Error('Registration failed with status: ' + response.status);
                 } catch (error) {
                     if (error.response) {
@@ -358,15 +358,15 @@ const EmployeesPage = () => {
                 status: error.response?.status,
                 config: error.config
             });
-            
+
             let errorMessage = 'Failed to save employee';
-            
+
             if (error.response?.data?.message) {
                 errorMessage = error.response.data.message;
             } else if (error.message) {
                 errorMessage = error.message;
             }
-            
+
             toast.error(errorMessage);
         } finally {
             setSubmitting(false);
@@ -499,11 +499,45 @@ const EmployeesPage = () => {
                         mb: 4,
                         p: 4,
                         borderRadius: 4,
-                        background: 'linear-gradient(135deg, #2b5a9e 0%, #d9764a 100%)',
+                        background: 'linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%)',
+                        boxShadow: '0 10px 25px -5px rgba(59, 130, 246, 0.5)',
                         color: 'white',
                         position: 'relative',
-                        overflow: 'hidden',
+                        overflow: 'hidden'
                     }}>
+                        {/* Animated decorative elements */}
+                        <motion.div
+                            animate={{
+                                y: [0, -10, 0],
+                                transition: { duration: 3, repeat: Infinity, repeatType: "reverse" }
+                            }}
+                            style={{
+                                position: 'absolute',
+                                top: -100,
+                                right: -100,
+                                width: 300,
+                                height: 300,
+                                borderRadius: '50%',
+                                background: 'rgba(255,255,255,0.1)',
+                                zIndex: 0
+                            }}
+                        />
+                        <motion.div
+                            animate={{
+                                y: [0, -10, 0],
+                                transition: { duration: 3, repeat: Infinity, repeatType: "reverse", delay: 1 }
+                            }}
+                            style={{
+                                position: 'absolute',
+                                bottom: -80,
+                                left: -80,
+                                width: 200,
+                                height: 200,
+                                borderRadius: '50%',
+                                background: 'rgba(255,255,255,0.1)',
+                                zIndex: 0
+                            }}
+                        />
                         <Box sx={{ position: 'relative', zIndex: 2 }}>
                             <Typography variant="h4" fontWeight="bold" gutterBottom>
                                 Employee Directory
@@ -512,7 +546,7 @@ const EmployeesPage = () => {
                                 Manage your organization's workforce efficiently. Add, view, and manage employee information in one place.
                             </Typography>
                         </Box>
-                        
+
                         {/* Animated background elements */}
                         <Box sx={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1 }}>
                             <motion.div
@@ -589,14 +623,29 @@ const EmployeesPage = () => {
                         <AnimatedButton
                             startIcon={<Add />}
                             onClick={() => setOpenDialog(true)}
+                            sx={{
+                                borderRadius: '12px',
+                                height: '56px',
+                                background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                                transition: 'all 0.3s ease',
+                                textTransform: 'none',
+                                fontWeight: 600,
+                                px: 4,
+                                boxShadow: '0 4px 15px rgba(37, 99, 235, 0.2)',
+                                '&:hover': {
+                                    background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+                                    transform: 'translateY(-2px)',
+                                    boxShadow: '0 8px 25px rgba(37, 99, 235, 0.3)',
+                                }
+                            }}
                         >
                             Add Employee
                         </AnimatedButton>
                     </StyledSearchBar>
                 </motion.div>
 
-                <Paper sx={{ 
-                    my: 3, 
+                <Paper sx={{
+                    my: 3,
                     borderRadius: 2,
                     background: 'rgba(255, 255, 255, 0.9)',
                     backdropFilter: 'blur(10px)',
@@ -608,8 +657,8 @@ const EmployeesPage = () => {
                     <Tabs
                         value={currentTab}
                         onChange={(e, newValue) => setCurrentTab(newValue)}
-                        sx={{ 
-                            borderBottom: 1, 
+                        sx={{
+                            borderBottom: 1,
                             borderColor: 'divider',
                             '& .MuiTabs-indicator': {
                                 height: 3,
@@ -618,7 +667,7 @@ const EmployeesPage = () => {
                             },
                         }}
                     >
-                        <StyledTab 
+                        <StyledTab
                             label={
                                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                                     All Employees
@@ -628,11 +677,11 @@ const EmployeesPage = () => {
                                 </Box>
                             }
                         />
-                        <StyledTab 
+                        <StyledTab
                             label={
                                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                                     Active
-                                    <Box component="span" className="count-chip" sx={{ 
+                                    <Box component="span" className="count-chip" sx={{
                                         backgroundColor: alpha('#22c55e', 0.1),
                                         color: '#22c55e'
                                     }}>
@@ -641,11 +690,11 @@ const EmployeesPage = () => {
                                 </Box>
                             }
                         />
-                        <StyledTab 
+                        <StyledTab
                             label={
                                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                                     Inactive
-                                    <Box component="span" className="count-chip" sx={{ 
+                                    <Box component="span" className="count-chip" sx={{
                                         backgroundColor: alpha('#ef4444', 0.1),
                                         color: '#ef4444'
                                     }}>
@@ -673,9 +722,9 @@ const EmployeesPage = () => {
                                     style={{ width: '100%' }}
                                 >
                                     <StyledCard>
-                                        <Box sx={{ 
-                                            p: 3, 
-                                            display: 'flex', 
+                                        <Box sx={{
+                                            p: 3,
+                                            display: 'flex',
                                             flexDirection: 'column',
                                             height: '100%'
                                         }}>
@@ -710,10 +759,10 @@ const EmployeesPage = () => {
                                                 {employee?.email || 'No Email'}
                                             </Typography>
 
-                                            <Box sx={{ 
-                                                mt: 'auto', 
-                                                display: 'flex', 
-                                                alignItems: 'center', 
+                                            <Box sx={{
+                                                mt: 'auto',
+                                                display: 'flex',
+                                                alignItems: 'center',
                                                 gap: 1,
                                                 flexWrap: 'wrap'
                                             }}>
@@ -759,13 +808,15 @@ const EmployeesPage = () => {
                 >
                     <DialogTitle
                         sx={{
-                            background: 'linear-gradient(135deg, #2b5a9e 0%, #d9764a 100%)',
+                            // background: 'linear-gradient(135deg, #2b5a9e 0%, #d9764a 100%)',
+                            background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
                             color: 'white',
                             py: 3,
                             display: 'flex',
                             alignItems: 'center',
                             gap: 2,
                         }}
+
                     >
                         <Avatar
                             sx={{
@@ -778,7 +829,11 @@ const EmployeesPage = () => {
                             {isEditMode ? <Edit /> : <Add />}
                         </Avatar>
                         <Box>
-                            <Typography variant="h6" component="div">
+                            <Typography variant="h6" component="div" sx={{
+                                // background: 'linear-gradient(135deg, #2b5a9e 0%, #d9764a 100%)',
+                                background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                                
+                            }}>
                                 {isEditMode ? 'Edit Employee' : 'Register New Employee'}
                             </Typography>
                             <Typography variant="body2" sx={{ opacity: 0.8, mt: 0.5 }}>
@@ -974,10 +1029,13 @@ const EmployeesPage = () => {
                             startIcon={isEditMode ? <Save /> : <Add />}
                             sx={{
                                 borderRadius: 2,
-                                background: 'linear-gradient(135deg, #2b5a9e 0%, #d9764a 100%)',
+                                // background: 'linear-gradient(135deg, #2b5a9e 0%, #d9764a 100%)',
+                                background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                                
                                 px: 4,
                                 '&:hover': {
-                                    background: 'linear-gradient(135deg, #1e4b8f 0%, #c85f2f 100%)',
+                                    background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                                    // background: 'linear-gradient(135deg, #1e4b8f 0%, #c85f2f 100%)',
                                     transform: 'translateY(-2px)',
                                     boxShadow: '0 8px 16px -4px rgba(43, 90, 158, 0.25)',
                                 },

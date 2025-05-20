@@ -16,7 +16,6 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  TablePagination,
   Paper,
   Grid,
   InputAdornment,
@@ -52,9 +51,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import BaseUrl from '../Api';
-// import { toast } from 'react-toastify';
-import { ToastContainer, toast } from 'react-toastify';
-
+import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
 
 const MetricCard = styled(motion.div)(({ theme, color }) => ({
@@ -110,15 +107,6 @@ const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
 }));
 
 const TicketsPage = () => {
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
   const [tickets, setTickets] = useState([]);
   const [stats, setStats] = useState({ total: 0, open: 0, resolved: 0, breached: 0 });
   const [openDialog, setOpenDialog] = useState(false);
@@ -126,8 +114,6 @@ const TicketsPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedImage, setSelectedImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -339,7 +325,7 @@ const TicketsPage = () => {
         Swal.fire({
           icon: 'success',
           title: 'Success!',
-          text: `Ticket created successfully!`,
+          text: `Ticket ${response.data.ticketNumber} created successfully!`,
         });
         handleCloseDialog();
         if (userData?.isAdmin) {
@@ -424,7 +410,7 @@ const TicketsPage = () => {
       // Set image preview if ticket has an image
       if (response.data.image) {
         // Construct the full image URL
-        const imageUrl = `${response.data.image}`;
+        const imageUrl = `${BaseUrl}/uploads/${response.data.image}`;
         console.log('Setting image preview URL:', imageUrl); // Debug log
         setImagePreview(imageUrl);
       } else {
@@ -585,8 +571,7 @@ const TicketsPage = () => {
       toast.success('Ticket forwarded successfully!');
       setForwardDialogOpen(false);
       setSelectedEmployee('');
-      // fetchTickets();
-      fetchAllTickets();
+      fetchTickets();
     } catch (error) {
       console.error('Error forwarding ticket:', error);
       toast.error(error.response?.data?.message || 'Failed to forward ticket');
@@ -692,8 +677,6 @@ const TicketsPage = () => {
 
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
-      <ToastContainer position="top-right" autoClose={3000} />
-
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -846,25 +829,24 @@ const TicketsPage = () => {
                   <CircularProgress />
                 </TableCell>
               </TableRow>
-            ) : filteredTickets.length > 0 ? (filteredTickets.map((ticket) => (
+            ) : filteredTickets.map((ticket) => (
               <TableRow key={ticket._id}>
                 <TableCell>{ticket.ticketNumber}</TableCell>
                 <TableCell>
-
-                  {ticket.title}
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    {ticket.image && (
+                      <Avatar
+                        src={`${BaseUrl}/uploads/${ticket.image}`}
+                        variant="rounded"
+                        sx={{ width: 32, height: 32 }}
+                      />
+                    )}
+                    {ticket.title}
+                  </Box>
                 </TableCell>
                 {(userData?.isAdmin || userData?.role === 'Support') && (
                   <TableCell>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      {ticket.image && (
-                        <Avatar
-                          src={`${BaseUrl}/uploads/${ticket.image}`}
-                          variant="rounded"
-                          sx={{ width: 32, height: 32 }}
-                        />
-                      )}
-                      {ticket.createdBy?.name || 'N/A'}
-                    </Box>
+                    {ticket.createdBy?.name || 'N/A'}
                   </TableCell>
                 )}
                 <TableCell>{ticket.assignedTo?.name || 'N/A'}</TableCell>
@@ -940,42 +922,9 @@ const TicketsPage = () => {
                   </Box>
                 </TableCell>
               </TableRow>
-            ))) : (
-              <TableRow>
-                <TableCell colSpan={userData?.isAdmin ? 7 : 6} align="center" sx={{ py: 8 }}>
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      gap: 2
-                    }}
-                  >
-                    <DescriptionIcon
-                      sx={{
-                        fontSize: 64,
-                        color: 'text.secondary',
-                        opacity: 0.5
-                      }}
-                    />
-                    <Typography variant="h6" color="text.secondary">
-                      No tickets found
-                    </Typography>
-                  </Box>
-                </TableCell>
-              </TableRow>
-            )}
+            ))}
           </TableBody>
         </Table>
-        <TablePagination
-          component="div"
-          count={filteredTickets.length}
-          page={page}
-          onPageChange={handleChangePage}
-          rowsPerPage={rowsPerPage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-          rowsPerPageOptions={[5, 10, 25]}
-        />
       </StyledTableContainer>
 
       <Dialog
@@ -1521,40 +1470,40 @@ const TicketsPage = () => {
                     />
                   </Grid>
                 )} */}
-                {/* <Grid className='flex  gap-8'  > */}
-                <Grid item xs={12} width="100%">
-                  <Paper elevation={0} sx={{ p: 2, bgcolor: 'rgba(59, 130, 246, 0.05)', borderRadius: 2 }}>
-                    <Typography variant="h6" color="primary" gutterBottom>
-                      {selectedTicketDetails.title}
-                    </Typography>
-                    <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
-                      {selectedTicketDetails.description}
-                    </Typography>
-                  </Paper>
-                </Grid>
-
-                {selectedTicketDetails.image && (
+                <Grid className='flex  gap-8'  >
                   <Grid item xs={12}>
-                    <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-                      Attached Image
-                    </Typography>
-                    <Box
-                      component="img"
-                      src={selectedTicketDetails.image}
-                      alt="Ticket attachment"
-                      sx={{
-                        width: '100%',
-                        maxHeight: 200,
-                        objectFit: 'contain',
-                        borderRadius: 2,
-                        border: '1px solid',
-                        borderColor: 'divider'
-                      }}
-                    />
+                    <Paper elevation={0} sx={{ p: 2, bgcolor: 'rgba(59, 130, 246, 0.05)', borderRadius: 2 }}>
+                      <Typography variant="h6" color="primary" gutterBottom>
+                        {selectedTicketDetails.title}
+                      </Typography>
+                      <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
+                        {selectedTicketDetails.description}
+                      </Typography>
+                    </Paper>
                   </Grid>
-                )}
 
-                {/* </Grid> */}
+                  {selectedTicketDetails.image && (
+                    <Grid item xs={12}>
+                      <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                        Attached Image
+                      </Typography>
+                      <Box
+                        component="img"
+                        src={`${BaseUrl}/uploads/${selectedTicketDetails.image}`}
+                        alt="Ticket attachment"
+                        sx={{
+                          width: '100%',
+                          maxHeight: 200,
+                          objectFit: 'contain',
+                          borderRadius: 2,
+                          border: '1px solid',
+                          borderColor: 'divider'
+                        }}
+                      />
+                    </Grid>
+                  )}
+
+                </Grid>
 
                 <Grid className='flex  gap-15'  >
                   <Grid item xs={12} sm={6}>

@@ -95,9 +95,13 @@ const LoginPage = () => {
 
       // Redirect to dashboard after successful login
       setTimeout(() => {
-        navigate('/welcome');
+        if (response.data.employee.isAdmin) {
+          navigate('/welcome');
+        } else {
+          navigate('/landing');
+        }
       }, 1000);
-
+      
     } catch (error) {
       console.error('Login error:', error);
 
@@ -218,7 +222,7 @@ const LoginPage = () => {
       {/* Main content container */}
       <Box className="relative z-20 h-full w-full flex flex-col lg:flex-row">
         {/* Left side - Company info with background image */}
-        <Box 
+        <Box
           className={`${isMobile ? 'hidden' : 'flex'} lg:w-3/5 flex-col justify-between p-4 lg:p-12 text-white relative overflow-hidden`}
           sx={{
             background: 'linear-gradient(rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.9)), url("https://images.unsplash.com/photo-1557682250-33bd709cbe85?ixlib=rb-4.0.3&auto=format&fit=crop&w=2940&q=80")',
@@ -338,7 +342,7 @@ const LoginPage = () => {
           </motion.div>
 
 
-          <motion.div 
+          <motion.div
             className="text-sm text-blue-200 mt-16 flex justify-between items-center"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -353,7 +357,7 @@ const LoginPage = () => {
         </Box>
 
         {/* Right side - Login form */}
-        <Box 
+        <Box
           className={`w-full ${isMobile ? 'w-full' : 'lg:w-2/5'} flex items-center justify-center p-8 md:p-12 relative`}
           sx={{
             background: 'linear-gradient(135deg, #f1f5f9 0%, #ffffff 100%)',
@@ -378,11 +382,11 @@ const LoginPage = () => {
             <motion.div
               className="absolute top-0 right-0 w-[600px] h-[600px] opacity-[0.07]"
               initial={{ scale: 0.8, rotate: -45 }}
-              animate={{ 
+              animate={{
                 scale: [0.8, 1, 0.8],
                 rotate: [-45, -30, -45],
               }}
-              transition={{ 
+              transition={{
                 duration: 8,
                 repeat: Infinity,
                 ease: "easeInOut"
@@ -396,11 +400,11 @@ const LoginPage = () => {
             <motion.div
               className="absolute bottom-0 left-0 w-[500px] h-[500px] opacity-[0.05]"
               initial={{ scale: 0.8, rotate: 45 }}
-              animate={{ 
+              animate={{
                 scale: [0.8, 1, 0.8],
                 rotate: [45, 60, 45],
               }}
-              transition={{ 
+              transition={{
                 duration: 10,
                 repeat: Infinity,
                 ease: "easeInOut",
@@ -422,7 +426,7 @@ const LoginPage = () => {
               className="w-full space-y-10"
             >
               {/* Logo and Welcome Text */}
-              <motion.div 
+              <motion.div
                 className="text-center"
                 initial={{ y: -30, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
@@ -431,7 +435,7 @@ const LoginPage = () => {
                 <div className="relative inline-block mb-6">
                   <motion.div
                     className="absolute inset-0 rounded-full"
-                    animate={{ 
+                    animate={{
                       boxShadow: [
                         '0 0 0 3px rgba(14, 165, 233, 0.2)',
                         '0 0 0 6px rgba(14, 165, 233, 0.1)',
@@ -439,13 +443,13 @@ const LoginPage = () => {
                       ],
                       scale: [1, 1.1, 1]
                     }}
-                    transition={{ 
+                    transition={{
                       duration: 2,
                       repeat: Infinity,
                       ease: "easeInOut"
                     }}
                   />
-                  <Avatar 
+                  <Avatar
                     className="w-24 h-24 relative"
                     sx={{
                       background: 'linear-gradient(135deg, #0ea5e9, #3b82f6)',
@@ -456,8 +460,8 @@ const LoginPage = () => {
                     <LockOutlined className="text-4xl" />
                   </Avatar>
                 </div>
-                <Typography 
-                  variant="h3" 
+                <Typography
+                  variant="h3"
                   className="font-bold text-4xl mb-3 bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent"
                 >
                   Welcome Back
@@ -573,7 +577,7 @@ const LoginPage = () => {
                   />
                 </motion.div>
 
-                <motion.div 
+                <motion.div
                   className="flex justify-end"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -582,9 +586,9 @@ const LoginPage = () => {
                   <Typography
                     variant="body2"
                     className="text-blue-600 hover:text-blue-800 cursor-pointer font-medium"
-                    sx={{ 
+                    sx={{
                       transition: 'all 0.3s ease',
-                      '&:hover': { 
+                      '&:hover': {
                         transform: 'translateY(-1px)',
                         textDecoration: 'underline'
                       }
@@ -593,7 +597,7 @@ const LoginPage = () => {
                     <Button
                       onClick={() => navigate('/forgot-password')}
                       sx={{
-                        
+
                         textTransform: 'none',
                         color: '#3b82f6',
                         '&:hover': {
@@ -653,14 +657,14 @@ const LoginPage = () => {
                     }}
                   >
                     {loading ? (
-                      <CircularProgress 
-                        size={24} 
-                        sx={{ 
+                      <CircularProgress
+                        size={24}
+                        sx={{
                           color: 'white',
                           '& .MuiCircularProgress-circle': {
                             strokeLinecap: 'round'
                           }
-                        }} 
+                        }}
                       />
                     ) : (
                       'Sign In'

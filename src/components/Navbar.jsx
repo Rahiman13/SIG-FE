@@ -65,7 +65,8 @@ const Navbar = () => {
   const token = localStorage.getItem('token');
 
   const navItems = [
-    { title: 'Dashboard', path: '/welcome', icon: <Dashboard />, showAlways: true },
+    { title: 'Dashboard', path: '/welcome', icon: <Dashboard />, adminOnly: true },
+    { title: 'Landing', path: '/landing', icon: <Dashboard />, nonAdminOnly: true },
     { title: 'Employees', path: '/employees', icon: <People />, adminOnly: true },
     { title: 'Cards', path: '/cards', icon: <CreditCard />, showAlways: true },
     { title: 'Quick Links', path: '/quick-links', icon: <LinkIcon />, showAlways: true },
@@ -117,7 +118,9 @@ const Navbar = () => {
   };
 
   const filteredNavItems = navItems.filter(item => 
-    item.showAlways || (isAdmin && item.adminOnly)
+    item.showAlways || 
+    (isAdmin && item.adminOnly) || 
+    (!isAdmin && item.nonAdminOnly)
   );
 
   // Add this line near other state declarations
