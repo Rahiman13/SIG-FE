@@ -520,6 +520,13 @@ const QuickLinksPage = () => {
           onClose={handleCloseDialog}
           maxWidth="sm"
           fullWidth
+          PaperProps={{
+            sx: {
+              borderRadius: '24px',
+              background: 'rgba(255, 255, 255, 0.95)',
+              backdropFilter: 'blur(10px)',
+            }
+          }}
         >
           <DialogTitle sx={{
             pb: 1,
@@ -528,12 +535,17 @@ const QuickLinksPage = () => {
             gap: 1,
             borderBottom: '1px solid rgba(0,0,0,0.08)',
             position: 'relative',
-            backgroundColor: 'rgba(255, 255, 255, 0.8)',
+            // backgroundColor: 'rgba(255, 255, 255, 0.8)',
+            background: 'linear-gradient(135deg, #4f46e5, #3b82f6)',
+            borderRadius: '8px 8px 0 0',
+            color: 'white',
+            padding: '16px',
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
             backdropFilter: 'blur(10px)',
           }}>
-            {isEditMode ? <Edit color="primary" /> : <Add color="primary" />}
-            <Typography variant="h5" component="span">
-              {isEditMode ? 'Edit Quick Link' : 'Add New Quick Link'}
+            {isEditMode ? <Edit  className='text-white' /> : <Add   className='text-white'/>}
+            <Typography variant="h5" component="span" className='text-white'>
+              {isEditMode ? <div className='text-white'>Edit Quick Link</div> : <div className='text-white'>Add New Quick Link</div>}
             </Typography>
             <IconButton
               onClick={handleCloseDialog}
@@ -544,7 +556,7 @@ const QuickLinksPage = () => {
                 color: 'text.secondary'
               }}
             >
-              <Close />
+              <Close className='text-white' />
             </IconButton>
           </DialogTitle>
           <DialogContent dividers>

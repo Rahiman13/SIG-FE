@@ -831,7 +831,7 @@ const EmployeesPage = () => {
                         <Box>
                             <Typography variant="h6" component="div" sx={{
                                 // background: 'linear-gradient(135deg, #2b5a9e 0%, #d9764a 100%)',
-                                background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                                // background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
                                 
                             }}>
                                 {isEditMode ? 'Edit Employee' : 'Register New Employee'}

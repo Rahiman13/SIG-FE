@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-  Button,
-  IconButton,
-  Box,
-  Menu,
-  MenuItem,
-  Avatar,
-  useMediaQuery,
+import React, { useState } from 'react';
+import { 
+  AppBar, 
+  Toolbar, 
+  Typography, 
+  Button, 
+  IconButton, 
+  Box, 
+  Menu, 
+  MenuItem, 
+  Avatar, 
+  useMediaQuery, 
   useTheme,
   Drawer,
   List,
@@ -51,7 +51,6 @@ const Navbar = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openTicketModal, setOpenTicketModal] = useState(false);
-  const [profileData, setProfileData] = useState(null);
   const [ticketData, setTicketData] = useState({
     title: '',
     description: '',
@@ -118,9 +117,9 @@ const Navbar = () => {
     setMobileOpen(!mobileOpen);
   };
 
-  const filteredNavItems = navItems.filter(item =>
-    item.showAlways ||
-    (isAdmin && item.adminOnly) ||
+  const filteredNavItems = navItems.filter(item => 
+    item.showAlways || 
+    (isAdmin && item.adminOnly) || 
     (!isAdmin && item.nonAdminOnly)
   );
 
@@ -131,29 +130,11 @@ const Navbar = () => {
     navigate('/tickets');
   };
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const response = await axios.get(`${BaseUrl}/employees/profile`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        setProfileData(response.data);
-      } catch (error) {
-        console.error('Error fetching profile:', error);
-      }
-    };
-
-    fetchProfile();
-  }, []);
-
-
   return (
     <>
-      <AppBar
-        position="sticky"
-        sx={{
+      <AppBar 
+        position="sticky" 
+        sx={{ 
           background: 'rgba(255, 255, 255, 0.8)',
           backdropFilter: 'blur(10px)',
           boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)',
@@ -178,10 +159,10 @@ const Navbar = () => {
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
             />
-            <Typography
-              variant="h6"
-              sx={{
-                color: 'black',
+            <Typography 
+              variant="h6" 
+              sx={{ 
+                color: 'primary.main',
                 fontWeight: 'bold',
                 display: { xs: 'none', sm: 'block' }
               }}
@@ -202,8 +183,7 @@ const Navbar = () => {
                     color="primary"
                     startIcon={item.icon}
                     onClick={() => navigate(item.path)}
-                    sx={{
-                      color: 'black',
+                    sx={{ 
                       textTransform: 'none',
                       fontWeight: 600,
                       fontSize: '1rem',
@@ -229,10 +209,10 @@ const Navbar = () => {
                         left: 0,
                         width: '100%',
                         height: '3px',
-                        background: 'linear-gradient(135deg, #4f46e5, #3b82f6)',
+                        background: 'linear-gradient(90deg, #4f46e5, #3b82f6)',
                         transform: location.pathname === item.path ? 'scaleX(1)' : 'scaleX(0)',
                         transformOrigin: 'left',
-                        transition: 'transform 0.3s ease'
+                        transition: 'transform 0.3s ease',
                       },
                       '& .MuiButton-startIcon': {
                         color: location.pathname === item.path ? '#4f46e5' : 'inherit',
@@ -266,7 +246,7 @@ const Navbar = () => {
                     color="primary"
                     startIcon={<ConfirmationNumber />}
                     onClick={handleTicketClick}
-                    sx={{
+                    sx={{ 
                       textTransform: 'none',
                       fontWeight: 600,
                       fontSize: '1rem'
@@ -285,35 +265,15 @@ const Navbar = () => {
               whileTap={{ scale: 0.95 }}
             >
               <IconButton onClick={handleProfileMenuOpen}>
-                {/* <Avatar
-                  sx={{
+                <Avatar 
+                  sx={{ 
                     bgcolor: 'primary.main',
                     width: 35,
                     height: 35
                   }}
                 >
                   {userData.name?.charAt(0) || 'U'}
-                </Avatar> */}
-                {profileData?.profileImage ? (
-                  <Avatar
-                    src={profileData.profileImage}
-                    sx={{
-                      width: 35,
-                      height: 35,
-                      border: '2px solid rgba(79, 70, 229, 0.3)'
-                    }}
-                  />
-                ) : (
-                  <Avatar
-                    sx={{
-                      bgcolor: 'primary.main',
-                      width: 35,
-                      height: 35
-                    }}
-                  >
-                    {profileData?.name?.charAt(0) || userData.name?.charAt(0) || 'U'}
-                  </Avatar>
-                )}
+                </Avatar>
               </IconButton>
             </motion.div>
           </Box>
@@ -374,8 +334,8 @@ const Navbar = () => {
         <Divider />
         <List>
           {filteredNavItems.map((item) => (
-            <ListItem
-              button
+            <ListItem 
+              button 
               key={item.path}
               onClick={() => {
                 navigate(item.path);
@@ -391,8 +351,8 @@ const Navbar = () => {
                   content: '""',
                   position: 'absolute',
                   inset: 0,
-                  background: location.pathname === item.path ?
-                    'linear-gradient(135deg, rgba(79, 70, 229, 0.15) 0%, rgba(59, 130, 246, 0.15) 100%)' :
+                  background: location.pathname === item.path ? 
+                    'linear-gradient(135deg, rgba(79, 70, 229, 0.15) 0%, rgba(59, 130, 246, 0.15) 100%)' : 
                     'transparent',
                   transition: 'all 0.3s ease',
                 },
@@ -403,7 +363,7 @@ const Navbar = () => {
                 }
               }}
             >
-              <ListItemIcon
+              <ListItemIcon 
                 sx={{
                   color: location.pathname === item.path ? '#4f46e5' : 'inherit',
                   transition: 'all 0.3s ease',
@@ -412,8 +372,8 @@ const Navbar = () => {
               >
                 {item.icon}
               </ListItemIcon>
-              <ListItemText
-                primary={item.title}
+              <ListItemText 
+                primary={item.title} 
                 sx={{
                   '& .MuiTypography-root': {
                     fontWeight: location.pathname === item.path ? 700 : 500,
@@ -440,8 +400,8 @@ const Navbar = () => {
             </ListItem>
           ))}
           {!isAdmin && (
-            <ListItem
-              button
+            <ListItem 
+              button 
               onClick={handleTicketClick}
             >
               <ListItemIcon><ConfirmationNumber /></ListItemIcon>
@@ -469,8 +429,8 @@ const Navbar = () => {
           }
         }}
       >
-        <DialogTitle
-          sx={{
+        <DialogTitle 
+          sx={{ 
             pb: 2,
             background: 'linear-gradient(135deg, rgba(79, 70, 229, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%)',
             borderBottom: '1px solid rgba(0, 0, 0, 0.1)',
@@ -480,18 +440,18 @@ const Navbar = () => {
           }}
         >
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <ConfirmationNumber
-              sx={{
+            <ConfirmationNumber 
+              sx={{ 
                 fontSize: 28,
                 color: 'primary.main',
                 opacity: 0.8
-              }}
+              }} 
             />
             <Typography variant="h6" sx={{ fontWeight: 600 }}>
               Raise New Ticket
             </Typography>
           </Box>
-          <IconButton
+          <IconButton 
             onClick={() => setOpenTicketModal(false)}
             size="small"
             sx={{
@@ -505,10 +465,10 @@ const Navbar = () => {
           </IconButton>
         </DialogTitle>
         <DialogContent dividers>
-          <Box sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 3,
+          <Box sx={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            gap: 3, 
             pt: 2,
             '& .MuiTextField-root': {
               '& .MuiOutlinedInput-root': {
@@ -557,7 +517,7 @@ const Navbar = () => {
             onClick={() => setOpenTicketModal(false)}
             variant="outlined"
             color="inherit"
-            sx={{
+            sx={{ 
               borderRadius: '12px',
               textTransform: 'none',
               px: 3
@@ -569,7 +529,7 @@ const Navbar = () => {
             onClick={handleCreateTicket}
             loading={submitting}
             variant="contained"
-            sx={{
+            sx={{ 
               borderRadius: '12px',
               textTransform: 'none',
               px: 3,

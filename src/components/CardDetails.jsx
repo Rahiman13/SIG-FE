@@ -135,7 +135,8 @@ const CardDetails = () => {
             onClick={handleBack}
             sx={{
               position: 'fixed',
-              top: { xs: 16, md: 24 },
+              // top: { xs: 16, md: 24, lg: 32 },
+              top: 70,
               left: { xs: 16, md: 24 },
               bgcolor: 'white',
               boxShadow: '0 8px 32px rgba(0,0,0,0.1)',

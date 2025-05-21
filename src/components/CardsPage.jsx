@@ -1318,7 +1318,17 @@ const CardsPage = () => {
             fontWeight: 600,
           }
         }}>
-          {isEditMode ? 'Edit Card' : 'Create New Card'}
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: 'white' }}>
+            {/* {isEditMode ? <Edit color="primary" /> : } */}
+            <Box className="flex items-center gap-2 ">
+              <Add className='text-white' />
+              {/* <Typography variant="h5" fontWeight="bold">Create New Ticket</Typography> */}
+              {isEditMode ? 'Edit Card' : 'Create New Card'}
+            </Box>
+            <IconButton onClick={handleCloseDialog} size="small">
+              <Close className='text-white' />
+            </IconButton>
+          </Box>
         </DialogTitle>
         <DialogContent sx={{ p: 4 }}>
           <Box component="form" noValidate sx={{ mt: 2 }}>

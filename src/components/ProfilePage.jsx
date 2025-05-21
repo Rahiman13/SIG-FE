@@ -149,7 +149,7 @@ const ProfilePage = () => {
                         }
                     },
                 );
-                
+
                 if (response.data) {
                     setProfile(response.data);
                     // Update userData in localStorage with new profile image
@@ -543,7 +543,7 @@ const ProfilePage = () => {
                                                         },
                                                     }}
                                                 >
-                                                    {['CEO', 'HR', 'Manager', 'Developer', 'DevOps', 'BDE', 'Other'].map((role) => (
+                                                    {['CEO', 'HR', 'Manager', 'Developer', 'DevOps', 'BDE', 'Support', 'Other'].map((role) => (
                                                         <MenuItem key={role} value={role}>{role}</MenuItem>
                                                     ))}
                                                 </Select>

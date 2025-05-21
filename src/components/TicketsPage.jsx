@@ -885,15 +885,27 @@ const TicketsPage = () => {
                 <TableCell>
                   <Box sx={{ display: 'flex', gap: 1 }}>
                     {userData?.isAdmin ? (
-                      <Tooltip title="Forward Ticket">
-                        <IconButton
-                          onClick={() => handleForwardClick(ticket._id)}
-                          size="small"
-                          color="primary"
-                        >
-                          <ForwardIcon />
-                        </IconButton>
-                      </Tooltip>
+                      <>
+                        <Tooltip title="View Details">
+                          <IconButton
+                            onClick={() => handleViewClick(ticket._id)}
+                            size="small"
+                            color="primary"
+                          >
+                            <VisibilityIcon />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Forward Ticket">
+                          <IconButton
+                            onClick={() => handleForwardClick(ticket._id)}
+                            size="small"
+                            color="primary"
+                          >
+                            <ForwardIcon />
+                          </IconButton>
+                        </Tooltip>
+                      </>
+
                     ) : userData?.role === 'Support' ? (
                       <>
                         <Tooltip title="View Details">
@@ -991,11 +1003,15 @@ const TicketsPage = () => {
           }
         }}
       >
-        <DialogTitle sx={{ pb: 1 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <Typography variant="h5" fontWeight="bold">Create New Ticket</Typography>
+        <DialogTitle sx={{ pb: 1, background: 'linear-gradient(135deg, #4f46e5, #3b82f6)' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: 'white' }}>
+            {/* {isEditMode ? <Edit color="primary" /> : } */}
+            <Box className="flex items-center gap-2 ">
+              <Add className='text-white' />
+              <Typography variant="h5" fontWeight="bold">Create New Ticket</Typography>
+            </Box>
             <IconButton onClick={handleCloseDialog} size="small">
-              <Close />
+              <Close className='text-white' />
             </IconButton>
           </Box>
         </DialogTitle>
