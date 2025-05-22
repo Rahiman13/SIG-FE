@@ -138,7 +138,8 @@ const StyledTab = styled(Tab)(({ theme }) => ({
     fontSize: '0.95rem',
     minHeight: 53,
     '&.Mui-selected': {
-        color: theme.palette.primary.main,
+        // color: theme.palette.primary.main,
+        color: '#311188',
     },
     '& .MuiTab-wrapper': {
         display: 'flex',
@@ -147,7 +148,8 @@ const StyledTab = styled(Tab)(({ theme }) => ({
     '& .count-chip': {
         marginLeft: theme.spacing(1),
         backgroundColor: alpha(theme.palette.primary.main, 0.1),
-        color: theme.palette.primary.main,
+        // color: theme.palette.primary.main,
+        color: '#311188',
         fontWeight: 600,
         height: 'auto',
         padding: '0 8px',
@@ -499,7 +501,7 @@ const EmployeesPage = () => {
                         mb: 4,
                         p: 4,
                         borderRadius: 4,
-                        background: 'linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%)',
+                        background: 'linear-gradient(135deg, #311188 0%, #0A081E 100%)',
                         boxShadow: '0 10px 25px -5px rgba(59, 130, 246, 0.5)',
                         color: 'white',
                         position: 'relative',
@@ -548,7 +550,7 @@ const EmployeesPage = () => {
                         </Box>
 
                         {/* Animated background elements */}
-                        <Box sx={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1 }}>
+                        {/* <Box sx={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1 }}>
                             <motion.div
                                 animate={{
                                     rotate: 360,
@@ -563,7 +565,7 @@ const EmployeesPage = () => {
                                     background: 'radial-gradient(circle at center, rgba(255,255,255,0.1) 0%, transparent 60%)',
                                 }}
                             />
-                        </Box>
+                        </Box> */}
                     </Box>
                 </motion.div>
 
@@ -626,14 +628,14 @@ const EmployeesPage = () => {
                             sx={{
                                 borderRadius: '12px',
                                 height: '56px',
-                                background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                                background: 'linear-gradient(135deg, #311188 0%, #0A081E 100%)',
                                 transition: 'all 0.3s ease',
                                 textTransform: 'none',
                                 fontWeight: 600,
                                 px: 4,
                                 boxShadow: '0 4px 15px rgba(37, 99, 235, 0.2)',
                                 '&:hover': {
-                                    background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+                                    background: 'linear-gradient(135deg, #0A081E 0%, #311188 100%)',
                                     transform: 'translateY(-2px)',
                                     boxShadow: '0 8px 25px rgba(37, 99, 235, 0.3)',
                                 }
@@ -663,7 +665,7 @@ const EmployeesPage = () => {
                             '& .MuiTabs-indicator': {
                                 height: 3,
                                 borderRadius: '3px 3px 0 0',
-                                background: 'linear-gradient(90deg, #2b5a9e 0%, #d9764a 100%)',
+                                background: 'linear-gradient(135deg, #311188, #0A081E)',
                             },
                         }}
                     >
@@ -733,7 +735,8 @@ const EmployeesPage = () => {
                                                     sx={{
                                                         width: 64,
                                                         height: 64,
-                                                        bgcolor: 'primary.main',
+                                                        // bgcolor: 'primary.main',
+                                                        bgcolor: '#311188',
                                                         fontSize: '1.5rem',
                                                     }}
                                                 >
@@ -809,7 +812,7 @@ const EmployeesPage = () => {
                     <DialogTitle
                         sx={{
                             // background: 'linear-gradient(135deg, #2b5a9e 0%, #d9764a 100%)',
-                            background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                            background: 'linear-gradient(135deg, #311188 0%,#0A081E 100%)',
                             color: 'white',
                             py: 3,
                             display: 'flex',
@@ -1030,11 +1033,11 @@ const EmployeesPage = () => {
                             sx={{
                                 borderRadius: 2,
                                 // background: 'linear-gradient(135deg, #2b5a9e 0%, #d9764a 100%)',
-                                background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
                                 
+                                background: 'linear-gradient(135deg, #311188 0%, #0A081E 100%)',
                                 px: 4,
                                 '&:hover': {
-                                    background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                                    background: 'linear-gradient(135deg, #0A081E 0%, #311188 100%)',
                                     // background: 'linear-gradient(135deg, #1e4b8f 0%, #c85f2f 100%)',
                                     transform: 'translateY(-2px)',
                                     boxShadow: '0 8px 16px -4px rgba(43, 90, 158, 0.25)',

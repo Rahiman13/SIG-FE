@@ -109,6 +109,29 @@ const StyledDialog = styled(Dialog)(({ theme }) => ({
   },
 }))
 
+const StyledCardContent = styled(CardContent)(({ theme }) => ({
+  flex: 1,
+  display: 'flex',
+  flexDirection: 'column',
+  padding: theme.spacing(2),
+  position: 'relative',
+  background: 'linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,255,255,0.98))',
+}));
+
+// Add this new styled component for the shine effect
+const CardShine = styled(Box)({
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  width: '50%',
+  height: '100%',
+  background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)',
+  transform: 'translateX(-100%)',
+  opacity: 0,
+  transition: 'all 0.5s ease',
+  pointerEvents: 'none',
+});
+
 const QuickLinksPage = () => {
   const [links, setLinks] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
@@ -272,7 +295,9 @@ const QuickLinksPage = () => {
           mb: 4,
           p: 4,
           borderRadius: 4,
-          background: 'linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%)',
+          // background: 'linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%)',
+          background: 'linear-gradient(135deg, #311188 0%, #0A081E 100%)',
+
           boxShadow: '0 10px 25px -5px rgba(59, 130, 246, 0.5)',
           color: 'white',
           position: 'relative',
@@ -327,14 +352,18 @@ const QuickLinksPage = () => {
           onClick={() => handleOpenDialog()}
           sx={{
             borderRadius: '12px',
-            background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+            // background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+            background: 'linear-gradient(135deg, #311188 0%, #0A081E 100%)',
+
             padding: '12px 24px',
             textTransform: 'none',
             fontSize: '1rem',
             fontWeight: 600,
             boxShadow: '0 4px 15px rgba(37, 99, 235, 0.2)',
             '&:hover': {
-              background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+              // background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+              background: 'linear-gradient(135deg, #0A081E 0%, #311188 100%)',
+
               transform: 'translateY(-2px)',
               boxShadow: '0 8px 25px rgba(37, 99, 235, 0.3)',
             }
@@ -536,7 +565,9 @@ const QuickLinksPage = () => {
             borderBottom: '1px solid rgba(0,0,0,0.08)',
             position: 'relative',
             // backgroundColor: 'rgba(255, 255, 255, 0.8)',
-            background: 'linear-gradient(135deg, #4f46e5, #3b82f6)',
+            // background: 'linear-gradient(135deg, #4f46e5, #3b82f6)',
+            background: 'linear-gradient(135deg, #311188 0%, #0A081E 100%)',
+
             borderRadius: '8px 8px 0 0',
             color: 'white',
             padding: '16px',
@@ -629,11 +660,15 @@ const QuickLinksPage = () => {
               variant="contained"
               sx={{
                 borderRadius: '8px',
-                background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                background: 'linear-gradient(135deg, #311188 0%, #0A081E 100%)',
+
+                // background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
                 textTransform: 'none',
                 px: 3,
                 '&:hover': {
-                  background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+                  // background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+                  background: 'linear-gradient(135deg, #0A081E 0%, #311188 100%)',
+
                 }
               }}
             >
@@ -648,25 +683,3 @@ const QuickLinksPage = () => {
 
 export default QuickLinksPage;
 
-const StyledCardContent = styled(CardContent)(({ theme }) => ({
-  flex: 1,
-  display: 'flex',
-  flexDirection: 'column',
-  padding: theme.spacing(2),
-  position: 'relative',
-  background: 'linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,255,255,0.98))',
-}));
-
-// Add this new styled component for the shine effect
-const CardShine = styled(Box)({
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  width: '50%',
-  height: '100%',
-  background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)',
-  transform: 'translateX(-100%)',
-  opacity: 0,
-  transition: 'all 0.5s ease',
-  pointerEvents: 'none',
-});

@@ -209,7 +209,9 @@ const ProfilePage = () => {
                     <Box
                         sx={{
                             height: '200px',
-                            background: 'linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%)',
+                            // background: 'linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%)',
+                            background: 'linear-gradient(135deg, #311188 0%, #0A081E 100%)',
+
                             position: 'relative',
                         }}
                     />
@@ -287,7 +289,8 @@ const ProfilePage = () => {
                                 variant="h4"
                                 sx={{
                                     fontWeight: 'bold',
-                                    background: 'linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%)',
+                                    // background: 'linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%)',
+                                    background:'#311188',
                                     WebkitBackgroundClip: 'text',
                                     WebkitTextFillColor: 'transparent',
                                     textAlign: 'center',
@@ -301,7 +304,7 @@ const ProfilePage = () => {
                                 <Chip
                                     icon={<BadgeIcon />}
                                     label={profile?.employeeId}
-                                    color="primary"
+                                    color="secondary"
                                     variant="outlined"
                                 />
                                 <Chip
@@ -320,10 +323,14 @@ const ProfilePage = () => {
                                     sx={{
                                         mt: 3,
                                         borderRadius: '12px',
-                                        background: 'linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%)',
+                                        // background: 'linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%)',
+                                        background: 'linear-gradient(135deg, #311188 0%, #0A081E 100%)',
+
                                         boxShadow: '0 4px 15px rgba(79, 70, 229, 0.4)',
                                         '&:hover': {
-                                            background: 'linear-gradient(135deg, #4338ca 0%, #2563eb 100%)',
+                                            // background: 'linear-gradient(135deg, #4338ca 0%, #2563eb 100%)',
+                                            background: 'linear-gradient(135deg, #0A081E 0%, #311188 100%)',
+
                                         }
                                     }}
                                 >

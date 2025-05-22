@@ -72,6 +72,7 @@ const Navbar = () => {
     { title: 'Cards', path: '/cards', icon: <CreditCard />, showAlways: true },
     { title: 'Quick Links', path: '/quick-links', icon: <LinkIcon />, showAlways: true },
     { title: 'Tickets', path: '/tickets', icon: <ConfirmationNumber />, adminOnly: true },
+    { title: 'Raise Ticket', path: '/tickets', icon: <ConfirmationNumber />, nonAdminOnly: true },
   ];
 
   const handleCreateTicket = async () => {
@@ -217,9 +218,6 @@ const Navbar = () => {
                         position: 'absolute',
                         inset: 0,
                         borderRadius: '12px',
-                        // background: location.pathname === item.path ? 
-                        //   'linear-gradient(135deg, rgba(79, 70, 229, 0.15) 0%, rgba(59, 130, 246, 0.15) 100%)' : 
-                        //   'transparent',
                         transition: 'all 0.3s ease',
                       },
                       '&::after': {
@@ -229,13 +227,13 @@ const Navbar = () => {
                         left: 0,
                         width: '100%',
                         height: '3px',
-                        background: 'linear-gradient(135deg, #4f46e5, #3b82f6)',
+                        background: 'linear-gradient(135deg, #8C52FF, #311188)',
                         transform: location.pathname === item.path ? 'scaleX(1)' : 'scaleX(0)',
                         transformOrigin: 'left',
                         transition: 'transform 0.3s ease'
                       },
                       '& .MuiButton-startIcon': {
-                        color: location.pathname === item.path ? '#4f46e5' : 'inherit',
+                        color: location.pathname === item.path ? '#311188' : '#0A081E',
                         transform: location.pathname === item.path ? 'scale(1.1)' : 'scale(1)',
                         transition: 'all 0.3s ease',
                       },
@@ -244,9 +242,6 @@ const Navbar = () => {
                         fontWeight: location.pathname === item.path ? 700 : 600,
                       },
                       '&:hover': {
-                        '&::before': {
-                          // background: 'linear-gradient(135deg, rgba(79, 70, 229, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%)',
-                        },
                         '&::after': {
                           transform: 'scaleX(1)',
                         },
@@ -257,25 +252,6 @@ const Navbar = () => {
                   </Button>
                 </motion.div>
               ))}
-              {!isAdmin && (
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Button
-                    color="primary"
-                    startIcon={<ConfirmationNumber />}
-                    onClick={handleTicketClick}
-                    sx={{
-                      textTransform: 'none',
-                      fontWeight: 600,
-                      fontSize: '1rem'
-                    }}
-                  >
-                    Raise Ticket
-                  </Button>
-                </motion.div>
-              )}
             </Box>
           )}
 
@@ -306,7 +282,9 @@ const Navbar = () => {
                 ) : (
                   <Avatar
                     sx={{
-                      bgcolor: 'primary.main',
+                      // bgcolor: 'primary.main',
+                      background: '#311188 ',
+
                       width: 35,
                       height: 35
                     }}
@@ -439,15 +417,6 @@ const Navbar = () => {
               )}
             </ListItem>
           ))}
-          {!isAdmin && (
-            <ListItem
-              button
-              onClick={handleTicketClick}
-            >
-              <ListItemIcon><ConfirmationNumber /></ListItemIcon>
-              <ListItemText primary="Raise Ticket" />
-            </ListItem>
-          )}
         </List>
       </Drawer>
 

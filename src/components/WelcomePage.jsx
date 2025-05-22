@@ -294,7 +294,9 @@ const WelcomePage = () => {
                         mb: 4,
                         p: { xs: 3, md: 4 },
                         borderRadius: 4,
-                        background: 'linear-gradient(135deg, rgba(79, 70, 229, 0.95) 0%, rgba(59, 130, 246, 0.95) 100%)',
+                        // background: 'linear-gradient(135deg, rgba(79, 70, 229, 0.95) 0%, rgba(59, 130, 246, 0.95) 100%)',
+                        background: 'linear-gradient(135deg, #311188 0%, #0A081E 100%)',
+
                         backdropFilter: 'blur(10px)',
                         boxShadow: '0 20px 40px -15px rgba(59, 130, 246, 0.3)',
                         color: 'white',

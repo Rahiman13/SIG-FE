@@ -964,7 +964,9 @@ const CardsPage = () => {
             mb: 4,
             p: 4,
             borderRadius: 4,
-            background: 'linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%)',
+            // background: 'linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%)',
+            background: 'linear-gradient(135deg, #311188 0%, #0A081E 100%)',
+
             boxShadow: '0 10px 25px -5px rgba(59, 130, 246, 0.5)',
             color: 'white',
             position: 'relative',
@@ -1076,14 +1078,18 @@ const CardsPage = () => {
                 sx={{
                   borderRadius: '12px',
                   height: '56px',
-                  background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                  // background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                  background: 'linear-gradient(135deg, #311188 0%, #0A081E 100%)',
+                  
                   transition: 'all 0.3s ease',
                   textTransform: 'none',
                   fontWeight: 600,
                   px: 4,
                   boxShadow: '0 4px 15px rgba(37, 99, 235, 0.2)',
                   '&:hover': {
-                    background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+                    // background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+                    background: 'linear-gradient(135deg, #0A081E 0%, #311188 100%)',
+
                     transform: 'translateY(-2px)',
                     boxShadow: '0 8px 25px rgba(37, 99, 235, 0.3)',
                   }
@@ -1296,7 +1302,7 @@ const CardsPage = () => {
       <Dialog
         open={openDialog}
         onClose={handleCloseDialog}
-        maxWidth="md"
+        maxWidth="sm"
         fullWidth
         PaperProps={{
           sx: {
@@ -1309,7 +1315,9 @@ const CardsPage = () => {
         }}
       >
         <DialogTitle sx={{
-          background: 'linear-gradient(135deg, #4f46e5, #3b82f6)',
+          // background: 'linear-gradient(135deg, #4f46e5, #3b82f6)',
+          background: 'linear-gradient(135deg, #311188 0%, #0A081E 100%)',
+
           color: 'white',
           py: 3,
           px: 4,
@@ -1548,13 +1556,17 @@ const CardsPage = () => {
             variant="outlined"
             startIcon={<Close />}
             sx={{
-              borderRadius: '12px',
-              p: '10px 24px',
-              borderWidth: '2px',
-              '&:hover': {
-                borderWidth: '2px',
-                background: 'rgba(239, 68, 68, 0.05)'
-              }
+              borderRadius: '8px',
+              // background: 'linear-gradient(135deg, #311188 0%, #0A081E 100%)',
+
+              // background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+              textTransform: 'none',
+              px: 3,
+              // '&:hover': {
+              //   // background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+              //   background: 'linear-gradient(135deg, #0A081E 0%, #311188 100%)',
+
+              // }
             }}
           >
             Cancel
@@ -1565,15 +1577,17 @@ const CardsPage = () => {
             variant="contained"
             startIcon={<Save />}
             sx={{
-              borderRadius: '12px',
-              p: '10px 24px',
-              background: 'linear-gradient(135deg, #4f46e5, #3b82f6)',
+              borderRadius: '8px',
+              background: 'linear-gradient(135deg, #311188 0%, #0A081E 100%)',
+
+              // background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+              textTransform: 'none',
+              px: 3,
               '&:hover': {
-                background: 'linear-gradient(135deg, #4338ca, #2563eb)',
-                transform: 'translateY(-2px)',
-                boxShadow: '0 10px 20px -10px rgba(59, 130, 246, 0.5)'
-              },
-              transition: 'all 0.2s ease-in-out'
+                // background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+                background: 'linear-gradient(135deg, #0A081E 0%, #311188 100%)',
+
+              }
             }}
           >
             {isEditMode ? 'Save Changes' : 'Create Card'}

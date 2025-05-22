@@ -703,7 +703,9 @@ const TicketsPage = () => {
           mb: 4,
           p: 4,
           borderRadius: 4,
-          background: 'linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%)',
+          // background: 'linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%)',
+          background: 'linear-gradient(135deg, #311188 0%, #0A081E 100%)',
+
           boxShadow: '0 10px 25px -5px rgba(59, 130, 246, 0.5)',
           color: 'white',
           position: 'relative',
@@ -818,8 +820,21 @@ const TicketsPage = () => {
           onClick={() => setOpenDialog(true)}
           sx={{
             borderRadius: '12px',
+            // background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+            background: 'linear-gradient(135deg, #311188 0%, #0A081E 100%)',
+
+            padding: '2px 12px',
             textTransform: 'none',
-            px: 3
+            fontSize: '1rem',
+            fontWeight: 600,
+            boxShadow: '0 4px 15px rgba(37, 99, 235, 0.2)',
+            '&:hover': {
+              // background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+              background: 'linear-gradient(135deg, #0A081E 0%, #311188 100%)',
+
+              transform: 'translateY(-2px)',
+              boxShadow: '0 8px 25px rgba(37, 99, 235, 0.3)',
+            }
           }}
         >
           New Ticket
@@ -1003,7 +1018,7 @@ const TicketsPage = () => {
           }
         }}
       >
-        <DialogTitle sx={{ pb: 1, background: 'linear-gradient(135deg, #4f46e5, #3b82f6)' }}>
+        <DialogTitle sx={{ pb: 1, background: 'linear-gradient(135deg, #311188 0%, #0A081E 100%)', }}>
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: 'white' }}>
             {/* {isEditMode ? <Edit color="primary" /> : } */}
             <Box className="flex items-center gap-2 ">
@@ -1152,8 +1167,20 @@ const TicketsPage = () => {
           <Button
             onClick={handleCreateTicket}
             variant="contained"
-            sx={{ borderRadius: '12px', textTransform: 'none' }}
-            disabled={loading || !formData.title || !formData.description}
+            sx={{
+              borderRadius: '8px',
+              background: 'linear-gradient(135deg, #311188 0%, #0A081E 100%)',
+
+              // background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+              textTransform: 'none',
+              px: 3,
+              '&:hover': {
+                // background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+                background: 'linear-gradient(135deg, #0A081E 0%, #311188 100%)',
+
+              }
+            }}
+            // disabled={loading || !formData.title || !formData.description}
           >
             {loading ? (
               <CircularProgress size={24} color="inherit" />
